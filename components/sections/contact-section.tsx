@@ -6,6 +6,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Mail, Phone, MessageCircle, ArrowRight, CheckCircle } from "lucide-react"
+import emailjs from "@emailjs/browser"
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -15,16 +16,39 @@ export default function ContactSection() {
     message: "",
   })
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Integrate with marzapage contact handling
-    console.log("Form submitted:", formData)
-    setSubmitted(true)
-    setTimeout(() => {
+    setLoading(true)
+    try {
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID as string
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID as string
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          reply_to: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        },
+        { publicKey }
+      )
+
+      setSubmitted(true)
       setFormData({ name: "", email: "", phone: "", message: "" })
-      setSubmitted(false)
-    }, 3000)
+      setTimeout(() => {
+        setSubmitted(false)
+      }, 3000)
+    } catch (err) {
+      alert("There was a problem sending your message. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -142,10 +166,12 @@ export default function ContactSection() {
 
             <Button
               type="submit"
-              disabled={submitted}
+              disabled={loading || submitted}
               className="w-full bg-primary-foreground hover:bg-primary-foreground/90 text-primary font-semibold py-3 rounded-sm transition-all disabled:opacity-75"
             >
-              {submitted ? (
+              {loading ? (
+                <>Sending...</>
+              ) : submitted ? (
                 <>
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Message Sent!

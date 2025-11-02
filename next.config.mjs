@@ -6,7 +6,9 @@ const nextConfig = {
     unoptimized: true,
   },
   // Turbopack is default in Next.js 16; minimal config
-  turbopack: {},
+  turbopack: {
+    root: process.cwd(),
+  },
 }
 
 export default nextConfig
