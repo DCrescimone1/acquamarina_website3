@@ -1,6 +1,7 @@
 "use client"
 
 import { ExternalLink } from "lucide-react"
+import { useTranslation } from "@/lib/hooks/useTranslation"
 
 interface PriceResult {
   platform: string
@@ -19,6 +20,8 @@ interface PriceComparisonProps {
 }
 
 export default function PriceComparison({ results }: PriceComparisonProps) {
+  const { t } = useTranslation()
+  
   if (!results?.results || results.results.length === 0) {
     return null
   }
@@ -28,7 +31,7 @@ export default function PriceComparison({ results }: PriceComparisonProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-8 border border-border">
-      <h3 className="font-serif text-2xl font-bold text-foreground mb-6">Price Comparison</h3>
+      <h3 className="font-serif text-2xl font-bold text-foreground mb-6">{t('booking.priceComparison')}</h3>
 
       <div className="space-y-3">
         {sortedResults.map((result, index) => (
@@ -41,7 +44,7 @@ export default function PriceComparison({ results }: PriceComparisonProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-foreground">{result.platform}</p>
-                {result.price === bestPrice && <p className="text-xs text-green-600 font-medium">Best Price</p>}
+                {result.price === bestPrice && <p className="text-xs text-green-600 font-medium">{t('booking.bestPrice')}</p>}
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold text-primary">
@@ -54,7 +57,7 @@ export default function PriceComparison({ results }: PriceComparisonProps) {
                   rel="noopener noreferrer"
                   className="text-xs text-accent hover:underline flex items-center gap-1 justify-end mt-1"
                 >
-                  View <ExternalLink size={12} />
+                  {t('booking.view')} <ExternalLink size={12} />
                 </a>
               </div>
             </div>

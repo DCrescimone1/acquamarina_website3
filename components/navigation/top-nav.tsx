@@ -5,22 +5,24 @@ import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import LanguageSwitcher from "@/components/language-switcher"
+import { useTranslation } from "@/lib/hooks/useTranslation"
 
 interface NavigationProps {
   isScrolled: boolean
 }
 
-const navItems = [
-  { label: "Home", href: "#hero" },
-  { label: "Property", href: "#property" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Booking", href: "#booking" },
-  { label: "Location", href: "#location" },
-  { label: "Contact", href: "#contact" },
-]
-
 export default function Navigation({ isScrolled }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { t } = useTranslation()
+
+  const navItems = [
+    { label: t('navigation.home'), href: "#hero" },
+    { label: t('navigation.property'), href: "#property" },
+    { label: t('navigation.gallery'), href: "#gallery" },
+    { label: t('navigation.booking'), href: "#booking" },
+    { label: t('navigation.location'), href: "#location" },
+    { label: t('navigation.contact'), href: "#contact" },
+  ]
 
   return (
     <nav
@@ -44,7 +46,7 @@ export default function Navigation({ isScrolled }: NavigationProps) {
                 isScrolled ? "bg-primary hover:bg-primary/90" : "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
               } text-white px-3 py-2 rounded-sm text-xs font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95`}
             >
-              BOOK NOW
+              {t('navigation.bookNow')}
             </Button>
           </Link>
 
@@ -71,7 +73,7 @@ export default function Navigation({ isScrolled }: NavigationProps) {
                   isScrolled ? "bg-primary hover:bg-primary/90" : "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
                 } text-white px-3 md:px-6 py-2 rounded-sm text-xs md:text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95`}
               >
-                BOOK NOW
+                {t('navigation.bookNow')}
               </Button>
             </Link>
             <LanguageSwitcher isScrolled={isScrolled} />

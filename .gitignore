@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+.kiro
+marzapage_dump.txt
 
 # next.js
 /.next/

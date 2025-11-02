@@ -2,6 +2,8 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Playfair_Display, Lora } from "next/font/google"
 import "./globals.css"
+import { LanguageProvider } from "@/lib/contexts"
+import { DynamicMetadata } from "@/components/dynamic-metadata"
 
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
@@ -16,15 +18,30 @@ const lora = Lora({
 })
 
 export const metadata: Metadata = {
-  title: "Luxury Holiday Retreat | Book Your Perfect Getaway",
+  title: "Rifugio di Lusso per Vacanze | Prenota la Tua Fuga Perfetta",
   description:
-    "Experience ultimate coastal luxury. Discover our exquisite holiday property with premium amenities, stunning views, and world-class service. Book your dream getaway today.",
-  keywords: "luxury holiday, beach house, vacation rental, coastal retreat",
+    "Vivi l'epitome del lusso costiero. Scopri la nostra squisita proprietà per vacanze con servizi premium, viste mozzafiato e servizio di classe mondiale. Prenota oggi la tua fuga da sogno.",
+  keywords: "vacanze di lusso, casa al mare, affitto vacanze, rifugio costiero, Marzamemi, Sicilia",
   viewport: "width=device-width, initial-scale=1.0, maximum-scale=5.0",
   openGraph: {
-    title: "Luxury Holiday Retreat",
-    description: "Your perfect coastal escape",
+    title: "Acquamarina Casa Vacanze - Rifugio di Lusso",
+    description: "La tua perfetta fuga costiera a Marzamemi",
+    siteName: "Acquamarina Casa Vacanze",
     type: "website",
+    images: [
+      {
+        url: "/logo.webp",
+        width: 512,
+        height: 512,
+        alt: "Acquamarina Casa Vacanze Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Acquamarina Casa Vacanze - Rifugio di Lusso",
+    description: "La tua perfetta fuga costiera a Marzamemi",
+    images: ["/logo.webp"],
   },
 }
 
@@ -34,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="it">
       <head>
         <meta charSet="UTF-8" />
         <meta name="theme-color" content="#25354a" />
@@ -44,7 +61,10 @@ export default function RootLayout({
       <body
         className={`${playfairDisplay.variable} ${lora.variable} font-sans antialiased bg-background text-foreground overflow-x-hidden`}
       >
-        {children}
+        <LanguageProvider>
+          <DynamicMetadata />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   )

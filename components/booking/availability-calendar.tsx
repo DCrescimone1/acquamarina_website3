@@ -4,12 +4,14 @@ import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isAfter, isBefore } from "date-fns"
+import { useTranslation } from "@/lib/hooks/useTranslation"
 
 interface AvailabilityCalendarProps {
   onDateSelect?: (dates: { from: string; to: string }) => void
 }
 
 export default function AvailabilityCalendar({ onDateSelect }: AvailabilityCalendarProps) {
+  const { t } = useTranslation()
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [bookedDates, setBookedDates] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -24,7 +26,7 @@ export default function AvailabilityCalendar({ onDateSelect }: AvailabilityCalen
         const data = await response.json()
         setBookedDates(data)
       } catch (error) {
-        console.error("Error fetching calendar:", error)
+        console.error(t('booking.calendar.loadingError'), error)
       } finally {
         setLoading(false)
       }
@@ -95,7 +97,15 @@ export default function AvailabilityCalendar({ onDateSelect }: AvailabilityCalen
 
       {/* Weekday headers */}
       <div className="grid grid-cols-7 gap-2 mb-2">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        {[
+          t('booking.calendar.weekdays.sun'),
+          t('booking.calendar.weekdays.mon'),
+          t('booking.calendar.weekdays.tue'),
+          t('booking.calendar.weekdays.wed'),
+          t('booking.calendar.weekdays.thu'),
+          t('booking.calendar.weekdays.fri'),
+          t('booking.calendar.weekdays.sat')
+        ].map((day) => (
           <div key={day} className="text-center text-xs font-semibold text-muted-foreground">
             {day}
           </div>
@@ -139,11 +149,11 @@ export default function AvailabilityCalendar({ onDateSelect }: AvailabilityCalen
       <div className="mt-6 pt-4 border-t border-border space-y-2 text-xs">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded bg-primary"></div>
-          <span className="text-muted-foreground">Selected</span>
+          <span className="text-muted-foreground">{t('booking.calendar.legend.selected')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded bg-red-100"></div>
-          <span className="text-muted-foreground">Booked</span>
+          <span className="text-muted-foreground">{t('booking.calendar.legend.booked')}</span>
         </div>
       </div>
     </div>

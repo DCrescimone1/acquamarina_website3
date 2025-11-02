@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Mail, Phone, MessageCircle, ArrowRight, CheckCircle } from "lucide-react"
 import emailjs from "@emailjs/browser"
+import { useTranslation } from "@/lib/hooks/useTranslation"
 
 export default function ContactSection() {
+  const { t, utils } = useTranslation()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -45,7 +47,7 @@ export default function ContactSection() {
         setSubmitted(false)
       }, 3000)
     } catch (err) {
-      alert("There was a problem sending your message. Please try again.")
+      alert(t('contact.form.error'))
     } finally {
       setLoading(false)
     }
@@ -56,16 +58,16 @@ export default function ContactSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 md:pb-32">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-serif text-5xl md:text-6xl font-bold">Get In Touch</h2>
+          <h2 className="font-serif text-5xl md:text-6xl font-bold">{t('contact.title')}</h2>
           <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">
-            Have questions? We're here to help and ready to assist with any inquiries about your stay
+            {t('contact.subtitle')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
           {/* Contact Info */}
           <div>
-            <h3 className="font-serif text-3xl font-bold mb-8">Let's Connect</h3>
+            <h3 className="font-serif text-3xl font-bold mb-8">{t('contact.connectTitle')}</h3>
 
             <div className="space-y-8">
               {/* Email */}
@@ -74,7 +76,7 @@ export default function ContactSection() {
                   <Mail size={24} className="text-secondary" />
                 </div>
                 <div>
-                  <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-2 font-semibold">Email</p>
+                  <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-2 font-semibold">{t('contact.email')}</p>
                   <a href="mailto:Acquamarina.marzamemi@gmail.com" className="text-lg hover:text-secondary transition-colors">
                     acquamarina.marzamemi@gmail.com
                   </a>
@@ -87,7 +89,7 @@ export default function ContactSection() {
                   <Phone size={24} className="text-secondary" />
                 </div>
                 <div>
-                  <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-2 font-semibold">Phone</p>
+                  <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-2 font-semibold">{t('contact.phone')}</p>
                   <a href="tel:+393501159152" className="text-lg hover:text-secondary transition-colors">
                     +39 3501159152
                   </a>
@@ -101,10 +103,10 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-2 font-semibold">
-                    WhatsApp
+                    {t('contact.whatsapp')}
                   </p>
-                  <a href="https://wa.me/393501159152?text=Ciao%2C%20sono%20interessato%20a%20prenotare%20MarzaGem%20Holiday%20Home" className="text-lg hover:text-secondary transition-colors">
-                    WhatsApp us
+                  <a href={utils.whatsapp.getDefaultUrl()} className="text-lg hover:text-secondary transition-colors">
+                    {t('contact.whatsappText')}
                   </a>
                 </div>
               </div>
@@ -112,7 +114,7 @@ export default function ContactSection() {
 
             {/* Social Links */}
             <div className="mt-12 pt-8 border-t border-primary-foreground/20">
-              <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-4 font-semibold">Follow Us</p>
+              <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-4 font-semibold">{t('contact.followUs')}</p>
               <div className="flex gap-4">
                 {["Instagram", "Facebook"].map((social) => (
                   <a
@@ -131,7 +133,7 @@ export default function ContactSection() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               type="text"
-              placeholder="Your Name"
+              placeholder={t('contact.form.name')}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
@@ -140,7 +142,7 @@ export default function ContactSection() {
 
             <Input
               type="email"
-              placeholder="Your Email"
+              placeholder={t('contact.form.email')}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
@@ -149,14 +151,14 @@ export default function ContactSection() {
 
             <Input
               type="tel"
-              placeholder="Phone Number"
+              placeholder={t('contact.form.phone')}
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 h-12"
             />
 
             <textarea
-              placeholder="Your Message"
+              placeholder={t('contact.form.message')}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               required
@@ -170,15 +172,15 @@ export default function ContactSection() {
               className="w-full bg-primary-foreground hover:bg-primary-foreground/90 text-primary font-semibold py-3 rounded-sm transition-all disabled:opacity-75"
             >
               {loading ? (
-                <>Sending...</>
+                <>{t('contact.form.sending')}</>
               ) : submitted ? (
                 <>
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  Message Sent!
+                  {t('contact.form.sent')}
                 </>
               ) : (
                 <>
-                  SEND MESSAGE
+                  {t('contact.form.send')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </>
               )}

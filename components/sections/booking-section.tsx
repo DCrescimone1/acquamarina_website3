@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import AvailabilityCalendar from "@/components/booking/availability-calendar"
 import PriceComparison from "@/components/booking/price-comparison"
+import { useTranslation } from "@/lib/hooks/useTranslation"
 
 export default function BookingSection() {
+  const { t, language } = useTranslation()
   const [checkIn, setCheckIn] = useState("")
   const [checkOut, setCheckOut] = useState("")
   const [adults, setAdults] = useState(2)
@@ -17,8 +19,34 @@ export default function BookingSection() {
   const [searchResults, setSearchResults] = useState(null)
 
   const handleCheckAvailability = async () => {
+    // Validation
     if (!checkIn || !checkOut) {
-      alert("Please select check-in and check-out dates")
+      alert(t('booking.selectDatesError'))
+      return
+    }
+
+    const checkInDate = new Date(checkIn)
+    const checkOutDate = new Date(checkOut)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (checkInDate < today) {
+      alert(t('validation.pastDate'))
+      return
+    }
+
+    if (checkOutDate <= checkInDate) {
+      alert(t('validation.invalidDateRange'))
+      return
+    }
+
+    if (adults < 1) {
+      alert(t('validation.minGuests'))
+      return
+    }
+
+    if (adults + children > 6) {
+      alert(t('validation.maxGuests'))
       return
     }
 
@@ -30,7 +58,7 @@ export default function BookingSection() {
         body: JSON.stringify({
           dates: { from: checkIn, to: checkOut },
           guests: { adults, children },
-          language: "en",
+          language: language,
         }),
       })
 
@@ -39,15 +67,41 @@ export default function BookingSection() {
       setSearchResults(data)
     } catch (error) {
       console.error("Error:", error)
-      alert("Failed to check availability")
+      alert(t('booking.availabilityError'))
     } finally {
       setLoading(false)
     }
   }
 
   const handleBooking = async () => {
+    // Validation
     if (!checkIn || !checkOut) {
-      alert("Please select dates")
+      alert(t('booking.selectDatesError'))
+      return
+    }
+
+    const checkInDate = new Date(checkIn)
+    const checkOutDate = new Date(checkOut)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (checkInDate < today) {
+      alert(t('validation.pastDate'))
+      return
+    }
+
+    if (checkOutDate <= checkInDate) {
+      alert(t('validation.invalidDateRange'))
+      return
+    }
+
+    if (adults < 1) {
+      alert(t('validation.minGuests'))
+      return
+    }
+
+    if (adults + children > 6) {
+      alert(t('validation.maxGuests'))
       return
     }
 
@@ -77,10 +131,10 @@ export default function BookingSection() {
         <div className="text-center mb-12 md:mb-16">
           <span className="text-sm tracking-widest text-muted-foreground uppercase"></span>
           <h2 className="mt-4 font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-            Secure Your Stay
+            {t('booking.title')}
           </h2>
           <p className="mt-3 text-base md:text-lg text-muted-foreground">
-            Find available dates and check rates across platforms
+            {t('booking.subtitle')}
           </p>
         </div>
 
@@ -90,16 +144,16 @@ export default function BookingSection() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-xl p-8 md:p-12 border border-border mb-8">
               {/* Quick Search */}
-              <h3 className="font-serif text-2xl font-bold text-foreground mb-6">Find Your Dates</h3>
+              <h3 className="font-serif text-2xl font-bold text-foreground mb-6">{t('booking.findDatesTitle')}</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Check In</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">{t('booking.checkIn')}</label>
                   <Input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Check Out</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">{t('booking.checkOut')}</label>
                   <Input
                     type="date"
                     value={checkOut}
@@ -111,7 +165,7 @@ export default function BookingSection() {
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Adults</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">{t('booking.adults')}</label>
                   <Input
                     type="number"
                     min="1"
@@ -123,7 +177,7 @@ export default function BookingSection() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Children</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">{t('booking.children')}</label>
                   <Input
                     type="number"
                     min="0"
@@ -142,7 +196,7 @@ export default function BookingSection() {
                       onChange={(e) => setPets(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm font-medium text-foreground">Pets</span>
+                    <span className="text-sm font-medium text-foreground">{t('booking.pets')}</span>
                   </label>
                 </div>
               </div>
@@ -155,15 +209,15 @@ export default function BookingSection() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Checking...
+                    {t('booking.checking')}
                   </>
                 ) : (
-                  "CHECK AVAILABILITY"
+                  t('booking.checkAvailability')
                 )}
               </Button>
 
               <Button onClick={handleBooking} className="w-full bg-primary/80 hover:bg-primary/70 text-white h-11">
-                PROCEED TO BOOKING
+                {t('booking.proceedBooking')}
               </Button>
             </div>
 

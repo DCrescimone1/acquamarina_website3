@@ -5,8 +5,10 @@ import type React from "react"
 import { useState } from "react"
 import Image from "next/image"
 import { X, Send } from "lucide-react"
+import { useTranslation } from "@/lib/hooks/useTranslation"
 
 export default function FloatingLogoButton() {
+  const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [message, setMessage] = useState("")
@@ -28,11 +30,11 @@ export default function FloatingLogoButton() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           className="relative w-16 h-16 md:w-24 md:h-24 rounded-full bg-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 border-2 border-primary/20 overflow-hidden"
-          aria-label="Acquamarina Casa Vacanze - Open Chat"
+          aria-label={t('chat.aria.openChat')}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <Image
-            src="/images/design-mode/Screenshot%202025-11-01%20at%2016.26.27.png"
+            src="/logo.webp"
             alt="Acquamarina Logo"
             width={96}
             height={96}
@@ -46,7 +48,7 @@ export default function FloatingLogoButton() {
             isHovered && !isChatOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
           }`}
         >
-          Chat with us
+          {t('chat.tooltip')}
           <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary" />
         </div>
       </div>
@@ -62,7 +64,7 @@ export default function FloatingLogoButton() {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                 <Image
-                  src="/images/design-mode/Screenshot%202025-11-01%20at%2016.26.27.png"
+                  src="/logo.webp"
                   alt="Acquamarina"
                   width={40}
                   height={40}
@@ -70,14 +72,14 @@ export default function FloatingLogoButton() {
                 />
               </div>
               <div>
-                <h3 className="font-serif text-lg">Acquamarina</h3>
-                <p className="text-xs text-white/80">Casa Vacanze</p>
+                <h3 className="font-serif text-lg">{t('chat.header.title')}</h3>
+                <p className="text-xs text-white/80">{t('chat.header.subtitle')}</p>
               </div>
             </div>
             <button
               onClick={() => setIsChatOpen(false)}
               className="w-8 h-8 rounded-full hover:bg-white/20 transition-colors flex items-center justify-center"
-              aria-label="Close chat"
+              aria-label={t('chat.aria.closeChat')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -90,7 +92,7 @@ export default function FloatingLogoButton() {
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
                   <Image
-                    src="/images/design-mode/Screenshot%202025-11-01%20at%2016.26.27.png"
+                    src="/logo.webp"
                     alt="Acquamarina"
                     width={32}
                     height={32}
@@ -98,9 +100,9 @@ export default function FloatingLogoButton() {
                   />
                 </div>
                 <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 max-w-[80%]">
-                  <p className="text-sm text-gray-700 leading-relaxed">Welcome to Acquamarina Casa Vacanze! 🌊</p>
+                  <p className="text-sm text-gray-700 leading-relaxed">{t('chat.welcome.greeting')}</p>
                   <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                    How can we help you plan your perfect coastal getaway?
+                    {t('chat.welcome.question')}
                   </p>
                 </div>
               </div>
@@ -114,14 +116,14 @@ export default function FloatingLogoButton() {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type your message..."
+                placeholder={t('chat.input.placeholder')}
                 className="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
               />
               <button
                 type="submit"
                 disabled={!message.trim()}
                 className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
-                aria-label="Send message"
+                aria-label={t('chat.aria.sendMessage')}
               >
                 <Send className="w-5 h-5" />
               </button>

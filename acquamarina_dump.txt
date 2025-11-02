@@ -1,0 +1,2709 @@
+Folder structure:
+.
+├── acquamarina_dump.txt
+├── app
+│   ├── api
+│   │   ├── calendar
+│   │   │   └── route.ts
+│   │   ├── create-checkout-session
+│   │   │   └── route.ts
+│   │   └── search-prices
+│   │       └── route.ts
+│   ├── booking-confirmation
+│   │   ├── loading.tsx
+│   │   └── page.tsx
+│   ├── booking-success
+│   │   ├── loading.tsx
+│   │   └── page.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── payment
+│       ├── loading.tsx
+│       └── page.tsx
+├── components
+│   ├── booking
+│   │   ├── availability-calendar.tsx
+│   │   └── price-comparison.tsx
+│   ├── floating-logo-button.tsx
+│   ├── footer-separator.tsx
+│   ├── footer.tsx
+│   ├── language-switcher.tsx
+│   ├── navigation
+│   │   └── top-nav.tsx
+│   ├── sections
+│   │   ├── booking-section.tsx
+│   │   ├── contact-section.tsx
+│   │   ├── gallery-section.tsx
+│   │   ├── hero-section.tsx
+│   │   ├── location-section.tsx
+│   │   └── property-description.tsx
+│   ├── ui
+│   │   ├── button.tsx
+│   │   └── input.tsx
+│   └── wave-separator.tsx
+├── components.json
+├── eslint.config.mjs
+├── lib
+│   └── utils.ts
+├── next-env.d.ts
+├── next.config.mjs
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── project_dump.sh
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   └── window.svg
+├── README.md
+└── tsconfig.json
+
+16 directories, 45 files
+
+
+--- File Contents ---
+
+
+------------------------------------------------- ./app/booking-success/loading.tsx --------------------------------------------------
+
+export default function Loading() {
+  return null
+}
+
+------------------------------------------------- ./app/booking-success/page.tsx --------------------------------------------------
+
+"use client"
+
+import { useSearchParams, useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { CheckCircle2, Mail, Phone } from "lucide-react"
+
+export default function BookingSuccessPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const reference = searchParams?.get("reference")
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-muted/20 px-4 py-12">
+      <div className="max-w-2xl w-full">
+        <div className="bg-white rounded-lg shadow-2xl border border-green-200 p-8 md:p-12 text-center">
+          <CheckCircle2 className="w-20 h-20 text-green-500 mx-auto mb-6" />
+
+          <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Booking Confirmed!</h1>
+
+          <p className="text-lg text-muted-foreground mb-2">Your luxury retreat is secured</p>
+
+          {reference && (
+            <p className="text-sm text-muted-foreground mb-8 font-mono bg-muted p-4 rounded">
+              Reference: <span className="font-semibold">{reference}</span>
+            </p>
+          )}
+
+          <div className="space-y-4 my-12 text-left bg-muted/50 rounded-lg p-6">
+            <h3 className="font-serif text-xl font-bold text-foreground mb-6">What's Next?</h3>
+
+            <div className="flex gap-4 items-start">
+              <Mail className="flex-shrink-0 text-primary mt-1" size={20} />
+              <div>
+                <p className="font-medium text-foreground">Confirmation Email</p>
+                <p className="text-sm text-muted-foreground">Check your inbox for booking details</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <Phone className="flex-shrink-0 text-primary mt-1" size={20} />
+              <div>
+                <p className="font-medium text-foreground">We'll Contact You</p>
+                <p className="text-sm text-muted-foreground">Our team will reach out with pre-arrival details</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+            <p className="text-sm text-blue-900">
+              Questions? Contact us at{" "}
+              <a href="mailto:info@luxury.com" className="font-semibold hover:underline">
+                info@luxury.com
+              </a>{" "}
+              or{" "}
+              <a href="tel:+441234567890" className="font-semibold hover:underline">
+                +44 1234 567890
+              </a>
+            </p>
+          </div>
+
+          <Button
+            onClick={() => router.push("/")}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-8 text-base font-semibold"
+          >
+            Back to Home
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+------------------------------------------------- ./app/payment/loading.tsx --------------------------------------------------
+
+export default function Loading() {
+  return null
+}
+
+------------------------------------------------- ./app/payment/page.tsx --------------------------------------------------
+
+"use client"
+
+import { useState, useEffect } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Loader2, AlertCircle } from "lucide-react"
+
+export default function PaymentPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const checkIn = searchParams?.get("checkIn")
+  const checkOut = searchParams?.get("checkOut")
+  const adults = searchParams?.get("adults")
+  const price = searchParams?.get("price")
+
+  useEffect(() => {
+    // Simulate Stripe integration delay
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  const handlePayment = async () => {
+    setLoading(true)
+    try {
+      // Simulate payment processing
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // Redirect to success page
+      router.push(`/booking-success?reference=LUXURY-${Date.now()}`)
+    } catch (err) {
+      setError("Payment processing failed. Please try again.")
+      setLoading(false)
+    }
+  }
+
+  if (!price) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h1 className="font-serif text-3xl font-bold text-foreground mb-4">Invalid Payment Link</h1>
+          <Button onClick={() => router.push("/")} className="bg-primary hover:bg-primary/90">
+            Back to Home
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white to-muted/20 py-12 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Payment Form */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-xl border border-border p-8">
+              <h1 className="font-serif text-3xl font-bold text-foreground mb-8">Secure Payment</h1>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex gap-3">
+                  <AlertCircle className="text-red-600 flex-shrink-0" size={20} />
+                  <div>
+                    <p className="font-medium text-red-900">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-16">
+                  <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
+                  <p className="text-muted-foreground">Processing payment...</p>
+                </div>
+              ) : (
+                <form className="space-y-6">
+                  {/* Card Details - Placeholder for Stripe */}
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">Card Number</label>
+                    <input
+                      type="text"
+                      placeholder="4242 4242 4242 4242"
+                      className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Expiry</label>
+                      <input
+                        type="text"
+                        placeholder="MM/YY"
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">CVC</label>
+                      <input
+                        type="text"
+                        placeholder="123"
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handlePayment}
+                    disabled={loading}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-base font-semibold"
+                  >
+                    {loading ? "Processing..." : "Pay €" + price}
+                  </Button>
+                </form>
+              )}
+            </div>
+          </div>
+
+          {/* Booking Summary */}
+          <div>
+            <div className="bg-white rounded-lg shadow-xl border border-border p-8 sticky top-24">
+              <h3 className="font-serif text-xl font-bold text-foreground mb-6">Booking Summary</h3>
+
+              <div className="space-y-4 mb-6 pb-6 border-b border-border">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Check In:</span>
+                  <span className="font-medium text-foreground">
+                    {checkIn ? new Date(checkIn).toLocaleDateString() : "-"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Check Out:</span>
+                  <span className="font-medium text-foreground">
+                    {checkOut ? new Date(checkOut).toLocaleDateString() : "-"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Guests:</span>
+                  <span className="font-medium text-foreground">{adults}</span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-end">
+                <span className="font-serif text-lg font-bold text-foreground">Total</span>
+                <span className="font-serif text-3xl font-bold text-primary">€{price}</span>
+              </div>
+
+              <p className="text-xs text-muted-foreground mt-4 text-center">
+                By proceeding, you agree to our terms and conditions
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+------------------------------------------------- ./app/booking-confirmation/loading.tsx --------------------------------------------------
+
+export default function Loading() {
+  return null
+}
+
+------------------------------------------------- ./app/booking-confirmation/page.tsx --------------------------------------------------
+
+"use client"
+
+import { useSearchParams, useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { CheckCircle2, AlertCircle } from "lucide-react"
+
+export default function BookingConfirmationPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const checkIn = searchParams?.get("checkIn")
+  const checkOut = searchParams?.get("checkOut")
+  const adults = searchParams?.get("adults")
+  const children = searchParams?.get("children")
+  const price = searchParams?.get("price")
+
+  if (!checkIn || !checkOut) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h1 className="font-serif text-3xl font-bold text-foreground mb-4">Invalid Booking</h1>
+          <p className="text-muted-foreground mb-8">Please start your booking again from the beginning.</p>
+          <Button onClick={() => router.push("/")} className="bg-primary hover:bg-primary/90">
+            Back to Home
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-muted/20 px-4 py-12">
+      <div className="max-w-2xl w-full">
+        <div className="bg-white rounded-lg shadow-2xl border border-border p-8 md:p-12">
+          <div className="text-center mb-8">
+            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h1 className="font-serif text-4xl font-bold text-foreground">Booking Summary</h1>
+          </div>
+
+          <div className="space-y-6 mb-8">
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border">
+              <div>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Check In</p>
+                <p className="font-serif text-xl font-semibold text-foreground">
+                  {new Date(checkIn).toLocaleDateString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Check Out</p>
+                <p className="font-serif text-xl font-semibold text-foreground">
+                  {new Date(checkOut).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border">
+              <div>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Adults</p>
+                <p className="font-semibold text-foreground">{adults}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Children</p>
+                <p className="font-semibold text-foreground">{children || "0"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Total</p>
+                <p className="font-serif text-2xl font-bold text-primary">€{price}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button
+              onClick={() =>
+                router.push(
+                  "/payment?checkIn=" +
+                    checkIn +
+                    "&checkOut=" +
+                    checkOut +
+                    "&adults=" +
+                    adults +
+                    "&children=" +
+                    (children || 0) +
+                    "&price=" +
+                    price +
+                    "&currency=€",
+                )
+              }
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-base font-semibold"
+            >
+              PROCEED TO PAYMENT
+            </Button>
+            <Button onClick={() => router.push("/")} variant="outline" className="flex-1 h-12 text-base font-semibold">
+              Back to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+------------------------------------------------- ./app/layout.tsx --------------------------------------------------
+
+import type React from "react"
+import type { Metadata } from "next"
+import { Playfair_Display, Lora } from "next/font/google"
+import "./globals.css"
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["400", "700", "900"],
+})
+
+const lora = Lora({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["400", "500", "600", "700"],
+})
+
+export const metadata: Metadata = {
+  title: "Luxury Holiday Retreat | Book Your Perfect Getaway",
+  description:
+    "Experience ultimate coastal luxury. Discover our exquisite holiday property with premium amenities, stunning views, and world-class service. Book your dream getaway today.",
+  keywords: "luxury holiday, beach house, vacation rental, coastal retreat",
+  viewport: "width=device-width, initial-scale=1.0, maximum-scale=5.0",
+  openGraph: {
+    title: "Luxury Holiday Retreat",
+    description: "Your perfect coastal escape",
+    type: "website",
+  },
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="theme-color" content="#25354a" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body
+        className={`${playfairDisplay.variable} ${lora.variable} font-sans antialiased bg-background text-foreground overflow-x-hidden`}
+      >
+        {children}
+      </body>
+    </html>
+  )
+}
+
+------------------------------------------------- ./app/api/calendar/route.ts --------------------------------------------------
+
+import { NextResponse } from "next/server"
+import ICAL from "ical.js"
+import { startOfDay, endOfDay, subDays } from "date-fns"
+
+const AIRBNB_CALENDAR_URL = process.env.AIRBNB_CALENDAR_URL as string
+const BOOKING_CALENDAR_URL = process.env.BOOKING_CALENDAR_URL as string
+const CACHE_DURATION = 300
+
+let cache: {
+  timestamp: number
+  data: string
+} | null = null
+
+async function fetchAndParseCalendar(url: string, source: string) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "LuxuryRetreat-Calendar/1.0",
+        Accept: "text/calendar",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${source} calendar: ${response.status}`)
+    }
+
+    const icalData = await response.text()
+    const jcalData = ICAL.parse(icalData)
+    const comp = new ICAL.Component(jcalData)
+    const vevents = comp.getAllSubcomponents("vevent")
+
+    return vevents.map((vevent) => {
+      const event = new ICAL.Event(vevent)
+      const startDate = startOfDay(event.startDate.toJSDate())
+      const endDate = subDays(endOfDay(event.endDate.toJSDate()), 1)
+
+      return {
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+        summary: event.summary || "Booked",
+        source: source,
+      }
+    })
+  } catch (error) {
+    console.error(`Error fetching ${source} calendar:`, error)
+    return []
+  }
+}
+
+export async function GET() {
+  try {
+    const now = Date.now()
+
+    // Check cache
+    if (cache && now - cache.timestamp < CACHE_DURATION * 1000) {
+      return new NextResponse(cache.data, {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": `public, max-age=${CACHE_DURATION}`,
+        },
+      })
+    }
+
+    // Fetch calendar data
+    const events = []
+
+    if (AIRBNB_CALENDAR_URL) {
+      const airbnbEvents = await fetchAndParseCalendar(AIRBNB_CALENDAR_URL, "Airbnb")
+      events.push(...airbnbEvents)
+    }
+
+    if (BOOKING_CALENDAR_URL) {
+      const bookingEvents = await fetchAndParseCalendar(BOOKING_CALENDAR_URL, "Booking.com")
+      events.push(...bookingEvents)
+    }
+
+    const jsonData = JSON.stringify(events)
+    cache = { timestamp: now, data: jsonData }
+
+    return new NextResponse(jsonData, {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": `public, max-age=${CACHE_DURATION}`,
+      },
+    })
+  } catch (error) {
+    console.error("Calendar API error:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch calendar data", details: error instanceof Error ? error.message : "Unknown error" },
+      { status: 500 },
+    )
+  }
+}
+
+------------------------------------------------- ./app/api/create-checkout-session/route.ts --------------------------------------------------
+
+import { type NextRequest, NextResponse } from "next/server"
+import Stripe from "stripe"
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2024-11-20",
+})
+
+interface BookingDetails {
+  checkIn: string
+  checkOut: string
+  adults: number
+  children: number
+  pets: boolean
+  totalPrice: string
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { bookingDetails }: { bookingDetails: BookingDetails } = await request.json()
+    const amount = Math.round(Number.parseFloat(bookingDetails.totalPrice) * 100)
+    const reference = `LUXURY-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded",
+      payment_method_types: ["card", "paypal", "klarna", "sepa_debit"],
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: "Luxury Holiday Retreat Booking",
+              description: `Booking from ${bookingDetails.checkIn} to ${bookingDetails.checkOut}`,
+            },
+            unit_amount: amount,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      return_url: `${request.headers.get("origin")}/booking-success?reference=${reference}`,
+      metadata: {
+        reference,
+        checkIn: bookingDetails.checkIn,
+        checkOut: bookingDetails.checkOut,
+        adults: bookingDetails.adults.toString(),
+        children: bookingDetails.children.toString(),
+        pets: bookingDetails.pets.toString(),
+      },
+    })
+
+    return NextResponse.json({
+      clientSecret: session.client_secret,
+      sessionId: session.id,
+      reference,
+    })
+  } catch (error) {
+    console.error("Stripe error:", error)
+    return NextResponse.json(
+      { error: "Failed to create checkout session", details: error instanceof Error ? error.message : "Unknown error" },
+      { status: 500 },
+    )
+  }
+}
+
+------------------------------------------------- ./app/api/search-prices/route.ts --------------------------------------------------
+
+import { type NextRequest, NextResponse } from "next/server"
+
+interface SearchRequest {
+  dates: { from: string; to: string }
+  guests: { adults: number; children: number }
+  language?: string
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body: SearchRequest = await request.json()
+    const { dates, guests } = body
+
+    if (!dates.from || !dates.to) {
+      return NextResponse.json({ error: "Missing dates" }, { status: 400 })
+    }
+
+    // Calculate price based on duration
+    const from = new Date(dates.from)
+    const to = new Date(dates.to)
+    const nights = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24))
+
+    const pricePerNight = 250
+    const baseTotalPrice = nights * pricePerNight
+
+    // Calculate platform prices with variations
+    const results = [
+      {
+        platform: "Airbnb",
+        price: Math.round(baseTotalPrice * 1.15),
+        currency: "€",
+        url: "https://airbnb.com",
+        available: true,
+      },
+      {
+        platform: "Booking.com",
+        price: Math.round(baseTotalPrice * 1.1),
+        currency: "€",
+        url: "https://booking.com",
+        available: true,
+      },
+      {
+        platform: "Direct Booking",
+        price: baseTotalPrice,
+        currency: "€",
+        url: "#",
+        available: true,
+      },
+    ]
+
+    return NextResponse.json({ results })
+  } catch (error) {
+    console.error("Price search error:", error)
+    return NextResponse.json({ error: "Failed to search prices" }, { status: 500 })
+  }
+}
+
+------------------------------------------------- ./app/page.tsx --------------------------------------------------
+
+"use client"
+
+import { useState, useEffect } from "react"
+import HeroSection from "@/components/sections/hero-section"
+import PropertyDescriptionSection from "@/components/sections/property-description"
+import GallerySection from "@/components/sections/gallery-section"
+import BookingSection from "@/components/sections/booking-section"
+import LocationSection from "@/components/sections/location-section"
+import ContactSection from "@/components/sections/contact-section"
+import Footer from "@/components/footer"
+import Navigation from "@/components/navigation/top-nav"
+import FloatingLogoButton from "@/components/floating-logo-button"
+import WaveSeparator from "@/components/wave-separator"
+import FooterSeparator from "@/components/footer-separator"
+
+export default function Home() {
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  return (
+    <main className="w-full min-h-screen">
+      <Navigation isScrolled={isScrolled} />
+
+      <FloatingLogoButton />
+
+      <div id="hero">
+        <HeroSection />
+      </div>
+
+      <section id="property">
+        <PropertyDescriptionSection />
+      </section>
+
+      <section id="gallery">
+        <GallerySection />
+      </section>
+
+      <section id="booking">
+        <BookingSection />
+      </section>
+
+      <section id="location">
+        <LocationSection />
+      </section>
+
+      <WaveSeparator />
+
+      <div id="contact">
+        <ContactSection />
+      </div>
+
+      <FooterSeparator />
+
+      <Footer />
+    </main>
+  )
+}
+
+------------------------------------------------- ./app/globals.css --------------------------------------------------
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Luxury coastal color palette with Acquamarina teal */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0 0);
+
+  /* Acquamarina teal as primary */
+  --primary: #4e9091;
+  --primary-foreground: oklch(1 0 0);
+
+  /* Warm secondary accent */
+  --secondary: oklch(0.88 0.12 50);
+  --secondary-foreground: oklch(0.25 0.05 250);
+
+  /* Soft muted tones */
+  --muted: oklch(0.9 0.02 0);
+  --muted-foreground: oklch(0.5 0.02 0);
+
+  /* Accent for interactive elements */
+  --accent: #4e9091;
+  --accent-foreground: oklch(1 0 0);
+
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.94 0.01 0);
+  --input: oklch(0.97 0.01 0);
+  --ring: #4e9091;
+
+  --chart-1: #4e9091;
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.15 0.02 0);
+  --foreground: oklch(0.95 0.01 0);
+  --card: oklch(0.2 0.02 0);
+  --card-foreground: oklch(0.95 0.01 0);
+  --popover: oklch(0.2 0.02 0);
+  --popover-foreground: oklch(0.95 0.01 0);
+  --primary: #6ba89f;
+  --primary-foreground: oklch(0.15 0.02 0);
+  --secondary: oklch(0.4 0.08 250);
+  --secondary-foreground: oklch(0.95 0.01 0);
+  --muted: oklch(0.35 0.02 0);
+  --muted-foreground: oklch(0.6 0.02 0);
+  --accent: #6ba89f;
+  --accent-foreground: oklch(0.15 0.02 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.3 0.02 0);
+  --input: oklch(0.25 0.02 0);
+  --ring: #6ba89f;
+  --chart-1: #6ba89f;
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --font-sans: "Playfair Display", serif;
+  --font-serif: "Lora", serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  h1 {
+    @apply font-serif text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide;
+  }
+  h2 {
+    @apply font-serif text-3xl md:text-4xl font-bold tracking-wide;
+  }
+  h3 {
+    @apply font-serif text-2xl md:text-3xl font-semibold;
+  }
+
+  section {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary/90 text-white font-semibold transition-colors rounded-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold transition-colors rounded-sm;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply transition-all duration-200 focus:shadow-md;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply ring-2 ring-offset-1 ring-primary/20;
+  }
+
+  img {
+    @apply transition-transform duration-300;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  section + section {
+    @apply border-t border-border/30;
+  }
+}
+
+------------------------------------------------- ./postcss.config.mjs --------------------------------------------------
+
+const config = {
+  plugins: ["@tailwindcss/postcss"],
+};
+
+export default config;
+
+------------------------------------------------- ./next.config.mjs --------------------------------------------------
+
+const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  images: {
+    unoptimized: true,
+  },
+  // Turbopack is default in Next.js 16; minimal config
+  turbopack: {
+    root: process.cwd(),
+  },
+}
+
+export default nextConfig
+
+------------------------------------------------- ./next-env.d.ts --------------------------------------------------
+
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+
+------------------------------------------------- ./components/ui/button.tsx --------------------------------------------------
+
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+        outline:
+          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost:
+          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
+        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        icon: "size-9",
+        "icon-sm": "size-8",
+        "icon-lg": "size-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+function Button({
+  className,
+  variant,
+  size,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }) {
+  const Comp = asChild ? Slot : "button"
+
+  return (
+    <Comp
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+}
+
+export { Button, buttonVariants }
+
+------------------------------------------------- ./components/ui/input.tsx --------------------------------------------------
+
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+  return (
+    <input
+      type={type}
+      data-slot="input"
+      className={cn(
+        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Input }
+
+------------------------------------------------- ./components/sections/gallery-section.tsx --------------------------------------------------
+
+"use client"
+
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+export default function GallerySection() {
+  const [currentPage, setCurrentPage] = useState(0)
+  const [columnsPerPage, setColumnsPerPage] = useState(3)
+  const [autoRotate, setAutoRotate] = useState(true)
+
+  // Sample gallery images - replace with actual images
+  const galleryImages = Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    src: `/placeholder.svg?height=${300 + (i % 3) * 50}&width=${400 + (i % 3) * 50}&query=luxury-property-${i}`,
+    alt: `Property image ${i + 1}`,
+    size: i % 6, // 0-5 for varied sizes
+  }))
+
+  // Calculate responsive columns
+  useEffect(() => {
+    const updateColumns = () => {
+      if (window.innerWidth < 640) {
+        setColumnsPerPage(1) // Mobile: 3 images total (1 column layout)
+      } else if (window.innerWidth < 1024) {
+        setColumnsPerPage(2)
+      } else {
+        setColumnsPerPage(3)
+      }
+    }
+
+    updateColumns()
+    window.addEventListener("resize", updateColumns)
+    return () => window.removeEventListener("resize", updateColumns)
+  }, [])
+
+  // Auto-rotate pages every 5 seconds
+  useEffect(() => {
+    if (!autoRotate) return
+
+    const timer = setInterval(() => {
+      setCurrentPage((prev) => {
+        const maxPages = Math.ceil(galleryImages.length / 9)
+        return (prev + 1) % maxPages
+      })
+    }, 5000)
+
+    return () => clearInterval(timer)
+  }, [autoRotate, galleryImages.length])
+
+  const itemsPerPage = columnsPerPage === 1 ? 3 : 9
+  const maxPages = Math.ceil(galleryImages.length / itemsPerPage)
+  const startIdx = currentPage * itemsPerPage
+  const currentImages = galleryImages.slice(startIdx, startIdx + itemsPerPage)
+
+  const handlePrevPage = () => {
+    setAutoRotate(false)
+    setCurrentPage((prev) => (prev - 1 + maxPages) % maxPages)
+  }
+
+  const handleNextPage = () => {
+    setAutoRotate(false)
+    setCurrentPage((prev) => (prev + 1) % maxPages)
+  }
+
+  const getMobileGridClasses = (index: number) => {
+    if (index === 0) return "col-span-1 row-span-1" // Small top-left
+    if (index === 1) return "col-span-1 row-span-1" // Small top-right
+    if (index === 2) return "col-span-2 row-span-2" // Large bottom
+    return "col-span-1 row-span-1"
+  }
+
+  const getGridClasses = (index: number) => {
+    // Mobile: use special 3-image layout
+    if (columnsPerPage === 1) {
+      return getMobileGridClasses(index)
+    }
+
+    // Tablet/Desktop: original masonry pattern
+    const sizePattern = [
+      "col-span-1 row-span-1",
+      "col-span-2 row-span-2",
+      "col-span-1 row-span-1",
+      "col-span-1 row-span-2",
+      "col-span-2 row-span-1",
+      "col-span-1 row-span-1",
+    ]
+    return sizePattern[index % 6]
+  }
+
+  return (
+    <section className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">Visual Tour</h2>
+          <p className="mt-3 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            Explore the beauty of our property with our curated photo collection
+          </p>
+        </div>
+
+        {/* Gallery Grid with Masonry Layout */}
+        <div className="relative">
+          <div className="grid gap-3 md:gap-4 mb-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-3 auto-rows-[150px] md:auto-rows-[280px]">
+            {currentImages.map((image, idx) => (
+              <div
+                key={image.id}
+                className={`${getGridClasses(idx)} relative rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 group cursor-pointer animate-in fade-in`}
+                style={{ animationDelay: `${idx * 50}ms` }}
+              >
+                <Image
+                  src={image.src || "/placeholder.svg"}
+                  alt={image.alt}
+                  fill
+                  className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                  quality={75}
+                  sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                  <div className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg className="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pagination Indicator & Controls */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 md:mt-12">
+            {/* Minimal Page Indicator */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs md:text-sm text-muted-foreground">
+                Page <span className="font-semibold text-foreground">{currentPage + 1}</span>/
+                <span className="font-semibold text-foreground">{maxPages}</span>
+              </span>
+            </div>
+
+            <div className="flex gap-2 md:gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handlePrevPage}
+                className="rounded-full h-9 w-9 md:h-10 md:w-10 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 active:scale-95 bg-transparent"
+                aria-label="Previous page"
+              >
+                <ChevronLeft size={18} />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleNextPage}
+                className="rounded-full h-9 w-9 md:h-10 md:w-10 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 active:scale-95 bg-transparent"
+                aria-label="Next page"
+              >
+                <ChevronRight size={18} />
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${autoRotate ? "bg-primary scale-125" : "bg-gray-300"}`}
+              ></div>
+              <span className="hidden sm:inline">{autoRotate ? "Auto" : "Manual"}</span>
+            </div>
+          </div>
+
+          <div className="mt-6 h-1 bg-border rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-500"
+              style={{ width: `${((currentPage + 1) / maxPages) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+------------------------------------------------- ./components/sections/booking-section.tsx --------------------------------------------------
+
+"use client"
+
+import { useState } from "react"
+import { Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import AvailabilityCalendar from "@/components/booking/availability-calendar"
+import PriceComparison from "@/components/booking/price-comparison"
+
+export default function BookingSection() {
+  const [checkIn, setCheckIn] = useState("")
+  const [checkOut, setCheckOut] = useState("")
+  const [adults, setAdults] = useState(2)
+  const [children, setChildren] = useState(0)
+  const [pets, setPets] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [searchResults, setSearchResults] = useState(null)
+
+  const handleCheckAvailability = async () => {
+    if (!checkIn || !checkOut) {
+      alert("Please select check-in and check-out dates")
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch("/api/search-prices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dates: { from: checkIn, to: checkOut },
+          guests: { adults, children },
+          language: "en",
+        }),
+      })
+
+      if (!response.ok) throw new Error("Failed to fetch prices")
+      const data = await response.json()
+      setSearchResults(data)
+    } catch (error) {
+      console.error("Error:", error)
+      alert("Failed to check availability")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleBooking = async () => {
+    if (!checkIn || !checkOut) {
+      alert("Please select dates")
+      return
+    }
+
+    // Calculate price based on nights
+    const nights = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))
+    const pricePerNight = 250
+    const totalPrice = nights * pricePerNight
+
+    // Redirect to payment/confirmation page
+    const params = new URLSearchParams({
+      checkIn,
+      checkOut,
+      adults: adults.toString(),
+      children: children.toString(),
+      pets: pets.toString(),
+      price: totalPrice.toString(),
+      currency: "€",
+    })
+
+    window.location.href = `/booking-confirmation?${params}`
+  }
+
+  return (
+    <section className="bg-gradient-to-b from-white to-muted/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <span className="text-sm tracking-widest text-muted-foreground uppercase"></span>
+          <h2 className="mt-4 font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
+            Secure Your Stay
+          </h2>
+          <p className="mt-3 text-base md:text-lg text-muted-foreground">
+            Find available dates and check rates across platforms
+          </p>
+        </div>
+
+        {/* Booking Widget */}
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Search & Calendar */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-xl p-8 md:p-12 border border-border mb-8">
+              {/* Quick Search */}
+              <h3 className="font-serif text-2xl font-bold text-foreground mb-6">Find Your Dates</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">Check In</label>
+                  <Input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">Check Out</label>
+                  <Input
+                    type="date"
+                    value={checkOut}
+                    onChange={(e) => setCheckOut(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">Adults</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="6"
+                    value={adults}
+                    onChange={(e) => setAdults(Number.parseInt(e.target.value) || 1)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">Children</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="4"
+                    value={children}
+                    onChange={(e) => setChildren(Number.parseInt(e.target.value) || 0)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="flex items-end">
+                  <label className="flex items-center gap-2 cursor-pointer w-full">
+                    <input
+                      type="checkbox"
+                      checked={pets}
+                      onChange={(e) => setPets(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm font-medium text-foreground">Pets</span>
+                  </label>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleCheckAvailability}
+                disabled={loading}
+                className="w-full bg-primary hover:bg-primary/90 text-white h-11 mb-6"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  "CHECK AVAILABILITY"
+                )}
+              </Button>
+
+              <Button onClick={handleBooking} className="w-full bg-primary/80 hover:bg-primary/70 text-white h-11">
+                PROCEED TO BOOKING
+              </Button>
+            </div>
+
+            {/* Price Comparison Results */}
+            {searchResults && <PriceComparison results={searchResults} />}
+          </div>
+
+          {/* Right Column - Calendar */}
+          <div className="lg:col-span-1">
+            <AvailabilityCalendar
+              onDateSelect={(dates) => {
+                setCheckIn(dates.from)
+                setCheckOut(dates.to)
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+------------------------------------------------- ./components/sections/property-description.tsx --------------------------------------------------
+
+"use client"
+
+import { useEffect, useState } from "react"
+import Image from "next/image"
+
+export default function PropertyDescriptionSection() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
+  const amenities = [
+    { icon: "🛏️", title: "Luxury Bedrooms", description: "Premium linens and bespoke furnishings" },
+    { icon: "🍽️", title: "Gourmet Kitchen", description: "State-of-the-art appliances" },
+    { icon: "🏊", title: "Private Pool", description: "Heated infinity pool with sea views" },
+    { icon: "🌅", title: "Terrace", description: "Panoramic ocean vistas" },
+    { icon: "📺", title: "Entertainment", description: "Premium smart home systems" },
+    { icon: "🧘", title: "Wellness", description: "Spa and meditation spaces" },
+  ]
+
+  return (
+    <section className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
+            A Unique
+            <br />
+            Location
+          </h2>
+        </div>
+
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center mb-16 md:mb-20">
+          {/* Image */}
+          <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 order-2 lg:order-1 group">
+            <Image
+              src="/placeholder.svg?key=xk1vs"
+              alt="Property interior"
+              fill
+              className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+              quality={85}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/10 transition-all duration-300"></div>
+          </div>
+
+          {/* Description */}
+          <div
+            className={`transition-all duration-1000 order-1 lg:order-2 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+            }`}
+          >
+            <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 md:mb-6">
+              Hope Cove
+            </h3>
+
+            <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4 md:mb-6">
+              Nestled on the edge of the sandy beach, this exquisite property offers breathtaking panoramic views of
+              pristine coastlines. Every detail has been thoughtfully curated to provide the ultimate luxury experience.
+            </p>
+
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-6 md:mb-8">
+              The residence seamlessly blends contemporary design with timeless elegance, featuring premium materials,
+              bespoke furnishings, and cutting-edge amenities throughout. Perfect for discerning travelers seeking an
+              unforgettable coastal escape.
+            </p>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-3 gap-4 md:gap-8 pt-6 md:pt-8 border-t border-border">
+              <div className="group hover:scale-105 transition-transform duration-200">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-primary transition-colors group-hover:text-accent">
+                  4
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">
+                  Bedrooms
+                </p>
+              </div>
+              <div className="group hover:scale-105 transition-transform duration-200">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-primary transition-colors group-hover:text-accent">
+                  3
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">
+                  Bathrooms
+                </p>
+              </div>
+              <div className="group hover:scale-105 transition-transform duration-200">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-primary transition-colors group-hover:text-accent">
+                  2800
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">Sq M</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Amenities Grid */}
+        <div className="mt-12 md:mt-20 lg:mt-32">
+          <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground text-center mb-8 md:mb-16">
+            Premium Amenities
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            {amenities.map((item, index) => (
+              <div
+                key={index}
+                className="p-6 md:p-8 border border-border rounded-lg hover:shadow-lg hover:border-primary/50 transition-all duration-300 group cursor-pointer transform hover:-translate-y-1"
+              >
+                <p className="text-3xl md:text-4xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300 inline-block">
+                  {item.icon}
+                </p>
+                <h4 className="font-serif text-lg md:text-xl font-semibold text-foreground mb-2 md:mb-3">
+                  {item.title}
+                </h4>
+                <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+------------------------------------------------- ./components/sections/contact-section.tsx --------------------------------------------------
+
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Mail, Phone, MessageCircle, ArrowRight, CheckCircle } from "lucide-react"
+import emailjs from "@emailjs/browser"
+
+export default function ContactSection() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  })
+  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    // Integrate with marzapage contact handling
+    setLoading(true)
+    try {
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID as string
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID as string
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          reply_to: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        },
+        { publicKey }
+      )
+
+      setSubmitted(true)
+      setFormData({ name: "", email: "", phone: "", message: "" })
+      setTimeout(() => {
+        setSubmitted(false)
+      }, 3000)
+    } catch (err) {
+      alert("There was a problem sending your message. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <section className="py-20 md:py-32 pb-0 bg-primary text-primary-foreground">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 md:pb-32">
+        {/* Section Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="font-serif text-5xl md:text-6xl font-bold">Get In Touch</h2>
+          <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">
+            Have questions? We're here to help and ready to assist with any inquiries about your stay
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
+          {/* Contact Info */}
+          <div>
+            <h3 className="font-serif text-3xl font-bold mb-8">Let's Connect</h3>
+
+            <div className="space-y-8">
+              {/* Email */}
+              <div className="flex gap-4 items-start">
+                <div className="shrink-0 mt-1">
+                  <Mail size={24} className="text-secondary" />
+                </div>
+                <div>
+                  <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-2 font-semibold">Email</p>
+                  <a href="mailto:Acquamarina.marzamemi@gmail.com" className="text-lg hover:text-secondary transition-colors">
+                    acquamarina.marzamemi@gmail.com
+                  </a>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex gap-4 items-start">
+                <div className="shrink-0 mt-1">
+                  <Phone size={24} className="text-secondary" />
+                </div>
+                <div>
+                  <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-2 font-semibold">Phone</p>
+                  <a href="tel:+393501159152" className="text-lg hover:text-secondary transition-colors">
+                    +39 3501159152
+                  </a>
+                </div>
+              </div>
+
+              {/* WhatsApp */}
+              <div className="flex gap-4 items-start">
+                <div className="shrink-0 mt-1">
+                  <MessageCircle size={24} className="text-secondary" />
+                </div>
+                <div>
+                  <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-2 font-semibold">
+                    WhatsApp
+                  </p>
+                  <a href="https://wa.me/393501159152?text=Ciao%2C%20sono%20interessato%20a%20prenotare%20MarzaGem%20Holiday%20Home" className="text-lg hover:text-secondary transition-colors">
+                    WhatsApp us
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div className="mt-12 pt-8 border-t border-primary-foreground/20">
+              <p className="text-sm uppercase tracking-wide text-primary-foreground/80 mb-4 font-semibold">Follow Us</p>
+              <div className="flex gap-4">
+                {["Instagram", "Facebook"].map((social) => (
+                  <a
+                    key={social}
+                    href="#"
+                    className="text-primary-foreground hover:text-secondary transition-colors hover:underline"
+                  >
+                    {social}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+              type="text"
+              placeholder="Your Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 h-12"
+            />
+
+            <Input
+              type="email"
+              placeholder="Your Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 h-12"
+            />
+
+            <Input
+              type="tel"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 h-12"
+            />
+
+            <textarea
+              placeholder="Your Message"
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              required
+              rows={5}
+              className="w-full px-4 py-3 rounded-md bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30 transition-all"
+            />
+
+            <Button
+              type="submit"
+              disabled={loading || submitted}
+              className="w-full bg-primary-foreground hover:bg-primary-foreground/90 text-primary font-semibold py-3 rounded-sm transition-all disabled:opacity-75"
+            >
+              {loading ? (
+                <>Sending...</>
+              ) : submitted ? (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Message Sent!
+                </>
+              ) : (
+                <>
+                  SEND MESSAGE
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+------------------------------------------------- ./components/sections/hero-section.tsx --------------------------------------------------
+
+"use client"
+
+import { useEffect, useState } from "react"
+import Image from "next/image"
+
+export default function HeroSection() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
+  return (
+    <div className="relative w-full h-screen min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 w-full h-full">
+        <Image
+          src="/luxury-beach-house-seaside.jpg"
+          alt="Luxury beach property"
+          fill
+          priority
+          className="object-cover object-center"
+          quality={85}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/40"></div>
+      </div>
+
+      {/* Content */}
+      <div
+        className={`relative z-10 text-center px-4 max-w-4xl mx-auto transition-all duration-1000 will-change-transform ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <h1
+          className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 md:mb-6 tracking-wider drop-shadow-lg animate-fade-in text-balance"
+          style={{ animationDelay: "400ms" }}
+        >
+          YOUR PERFECT
+          <br className="hidden sm:block" />
+          GETAWAY
+        </h1>
+
+        {/* Decorative badge */}
+        <div
+          className="inline-block border-2 border-white/50 rounded-full px-6 md:px-8 py-2 md:py-3 mb-6 md:mb-8 hover:border-white/80 transition-colors animate-fade-in"
+          style={{ animationDelay: "600ms" }}
+        >
+          <p className="text-xs md:text-base text-white/90 tracking-widest uppercase font-light">
+            Luxury Retreat by the Sea
+          </p>
+        </div>
+
+        <p
+          className="text-sm md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light px-2 animate-fade-in"
+          style={{ animationDelay: "800ms" }}
+        >
+          Experience the epitome of coastal luxury. A meticulously designed sanctuary combining contemporary comfort
+          with timeless elegance
+        </p>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+        <div className="text-white text-center">
+          <p className="text-xs tracking-widest uppercase mb-2">Scroll</p>
+          <svg className="w-5 h-5 md:w-6 md:h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+------------------------------------------------- ./components/sections/location-section.tsx --------------------------------------------------
+
+"use client"
+
+import { MapPin, Phone } from "lucide-react"
+
+export default function LocationSection() {
+  return (
+    <section className="py-12 md:py-16 lg:py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="font-serif text-5xl md:text-6xl font-bold text-foreground">Where We Are</h2>
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+            Nestled in a breathtaking coastal setting with easy access to local attractions and amenities
+          </p>
+        </div>
+
+        {/* Map Container */}
+        <div className="rounded-lg overflow-hidden shadow-xl h-[400px] md:h-[600px] bg-muted flex items-center justify-center mb-12 md:mb-16">
+          <iframe
+            src="https://www.google.com/maps?q=36.723632,15.117694&z=17&output=embed"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen={true}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+
+        {/* Location Info */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-6 md:p-8 bg-linear-to-br from-primary/5 to-accent/5 border border-border rounded-lg hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <MapPin className="w-6 h-6 text-primary" />
+              <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">Address</p>
+            </div>
+            <p className="font-serif text-xl font-semibold text-foreground">
+              Borgo 84, Marzamemi 96018
+              <br />
+              Cotrada Calafarina
+            </p>
+          </div>
+
+          <div className="p-6 md:p-8 bg-linear-to-br from-primary/5 to-accent/5 border border-border rounded-lg hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <MapPin className="w-6 h-6 text-primary" />
+              <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">Coordinates</p>
+            </div>
+            <p className="font-serif text-xl font-semibold text-foreground">36.723632, 15.117694</p>
+          </div>
+
+          <div className="p-6 md:p-8 bg-linear-to-br from-primary/5 to-accent/5 border border-border rounded-lg hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <Phone className="w-6 h-6 text-primary" />
+              <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">Nearby</p>
+            </div>
+            <p className="font-serif text-xl font-semibold text-foreground">
+              Marzamemi (2 min)
+              <br />
+              spiaggia (1 min)
+            </p>
+          </div>
+        </div>
+
+        {/* Additional Info */}
+        <div className="mt-16 md:mt-20 pt-16 md:pt-20 border-t border-border/30">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div>
+              <h3 className="font-serif text-2xl font-bold text-foreground mb-6">Getting Here</h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li className="flex gap-3">
+                  <span className="text-primary font-bold">•</span>
+                  <span>15 minutes from nearest airport</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-primary font-bold">•</span>
+                  <span>Direct access to coastal walking paths</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-primary font-bold">•</span>
+                  <span>Local restaurants and shops within 5 minutes</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-primary font-bold">•</span>
+                  <span>Ample on-site parking available</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-serif text-2xl font-bold text-foreground mb-6">What's Nearby</h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li className="flex gap-3">
+                  <span className="text-accent font-bold">★</span>
+                  <span>Beautiful sandy beaches</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent font-bold">★</span>
+                  <span>Historic town centers with galleries</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent font-bold">★</span>
+                  <span>Fine dining restaurants and cafés</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent font-bold">★</span>
+                  <span>Water sports and outdoor activities</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+------------------------------------------------- ./components/wave-separator.tsx --------------------------------------------------
+
+export default function WaveSeparator() {
+  return null
+}
+
+------------------------------------------------- ./components/floating-logo-button.tsx --------------------------------------------------
+
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import Image from "next/image"
+import { X, Send } from "lucide-react"
+
+export default function FloatingLogoButton() {
+  const [isHovered, setIsHovered] = useState(false)
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [message, setMessage] = useState("")
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (message.trim()) {
+      // TODO: Implement chat functionality
+      console.log("[v0] Message sent:", message)
+      setMessage("")
+    }
+  }
+
+  return (
+    <>
+      <div className="fixed bottom-8 right-8 z-50 group">
+        <button
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="relative w-16 h-16 md:w-24 md:h-24 rounded-full bg-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 border-2 border-primary/20 overflow-hidden"
+          aria-label="Acquamarina Casa Vacanze - Open Chat"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <Image
+            src="/images/design-mode/Screenshot%202025-11-01%20at%2016.26.27.png"
+            alt="Acquamarina Logo"
+            width={96}
+            height={96}
+            className="w-full h-full object-contain p-1"
+          />
+        </button>
+
+        {/* Tooltip on hover */}
+        <div
+          className={`absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-primary text-white text-sm rounded-lg whitespace-nowrap transition-all duration-300 ${
+            isHovered && !isChatOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
+          }`}
+        >
+          Chat with us
+          <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary" />
+        </div>
+      </div>
+
+      <div
+        className={`fixed bottom-8 right-8 z-40 w-[90vw] max-w-md transition-all duration-500 ease-out ${
+          isChatOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-8 pointer-events-none"
+        }`}
+      >
+        <div className="bg-white rounded-2xl shadow-2xl border border-primary/10 overflow-hidden mb-20 md:mb-28">
+          {/* Chat Header */}
+          <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <Image
+                  src="/images/design-mode/Screenshot%202025-11-01%20at%2016.26.27.png"
+                  alt="Acquamarina"
+                  width={40}
+                  height={40}
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg">Acquamarina</h3>
+                <p className="text-xs text-white/80">Casa Vacanze</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsChatOpen(false)}
+              className="w-8 h-8 rounded-full hover:bg-white/20 transition-colors flex items-center justify-center"
+              aria-label="Close chat"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Chat Body */}
+          <div className="h-80 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white">
+            <div className="space-y-4">
+              {/* Welcome Message */}
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
+                  <Image
+                    src="/images/design-mode/Screenshot%202025-11-01%20at%2016.26.27.png"
+                    alt="Acquamarina"
+                    width={32}
+                    height={32}
+                    className="w-6 h-6 object-contain"
+                  />
+                </div>
+                <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 max-w-[80%]">
+                  <p className="text-sm text-gray-700 leading-relaxed">Welcome to Acquamarina Casa Vacanze! 🌊</p>
+                  <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                    How can we help you plan your perfect coastal getaway?
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Chat Input */}
+          <div className="border-t border-gray-100 p-4 bg-white">
+            <form onSubmit={handleSendMessage} className="flex gap-2">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+              />
+              <button
+                type="submit"
+                disabled={!message.trim()}
+                className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                aria-label="Send message"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+------------------------------------------------- ./components/booking/price-comparison.tsx --------------------------------------------------
+
+"use client"
+
+import { ExternalLink } from "lucide-react"
+
+interface PriceResult {
+  platform: string
+  price: number
+  currency: string
+  url: string
+  available: boolean
+}
+
+interface PriceComparisonProps {
+  results?: {
+    results?: PriceResult[]
+    loading?: boolean
+    error?: string
+  }
+}
+
+export default function PriceComparison({ results }: PriceComparisonProps) {
+  if (!results?.results || results.results.length === 0) {
+    return null
+  }
+
+  const sortedResults = [...results.results].sort((a, b) => a.price - b.price)
+  const bestPrice = sortedResults[0]?.price
+
+  return (
+    <div className="bg-white rounded-lg shadow-xl p-8 border border-border">
+      <h3 className="font-serif text-2xl font-bold text-foreground mb-6">Price Comparison</h3>
+
+      <div className="space-y-3">
+        {sortedResults.map((result, index) => (
+          <div
+            key={result.platform}
+            className={`p-4 rounded-lg border transition-all ${
+              result.price === bestPrice ? "border-green-400 bg-green-50" : "border-border hover:shadow-md"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-foreground">{result.platform}</p>
+                {result.price === bestPrice && <p className="text-xs text-green-600 font-medium">Best Price</p>}
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-primary">
+                  {result.currency}
+                  {result.price}
+                </p>
+                <a
+                  href={result.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-accent hover:underline flex items-center gap-1 justify-end mt-1"
+                >
+                  View <ExternalLink size={12} />
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+------------------------------------------------- ./components/booking/availability-calendar.tsx --------------------------------------------------
+
+"use client"
+
+import { useState, useEffect } from "react"
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isAfter, isBefore } from "date-fns"
+
+interface AvailabilityCalendarProps {
+  onDateSelect?: (dates: { from: string; to: string }) => void
+}
+
+export default function AvailabilityCalendar({ onDateSelect }: AvailabilityCalendarProps) {
+  const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [bookedDates, setBookedDates] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedFrom, setSelectedFrom] = useState<Date | null>(null)
+  const [selectedTo, setSelectedTo] = useState<Date | null>(null)
+
+  useEffect(() => {
+    const fetchBookedDates = async () => {
+      try {
+        const response = await fetch("/api/calendar")
+        if (!response.ok) throw new Error("Failed to fetch calendar")
+        const data = await response.json()
+        setBookedDates(data)
+      } catch (error) {
+        console.error("Error fetching calendar:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchBookedDates()
+  }, [])
+
+  const isDateBooked = (date: Date) => {
+    return bookedDates.some((booking) => {
+      const start = new Date(booking.start)
+      const end = new Date(booking.end)
+      return date >= start && date <= end
+    })
+  }
+
+  const days = eachDayOfInterval({
+    start: startOfMonth(currentMonth),
+    end: endOfMonth(currentMonth),
+  })
+
+  const handleDateClick = (date: Date) => {
+    if (isDateBooked(date) || isBefore(date, new Date())) return
+
+    if (!selectedFrom || (selectedFrom && selectedTo)) {
+      setSelectedFrom(date)
+      setSelectedTo(null)
+    } else if (isAfter(date, selectedFrom)) {
+      setSelectedTo(date)
+      onDateSelect?.({
+        from: format(selectedFrom, "yyyy-MM-dd"),
+        to: format(date, "yyyy-MM-dd"),
+      })
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg shadow-xl p-6 flex items-center justify-center h-80">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-xl p-6 border border-border sticky top-24">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-serif text-lg font-bold text-foreground">{format(currentMonth, "MMMM yyyy")}</h3>
+        <div className="flex gap-2">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))}
+            className="h-8 w-8"
+          >
+            <ChevronLeft size={16} />
+          </Button>
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
+            className="h-8 w-8"
+          >
+            <ChevronRight size={16} />
+          </Button>
+        </div>
+      </div>
+
+      {/* Weekday headers */}
+      <div className="grid grid-cols-7 gap-2 mb-2">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+          <div key={day} className="text-center text-xs font-semibold text-muted-foreground">
+            {day}
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-2">
+        {days.map((day) => {
+          const isBooked = isDateBooked(day)
+          const isPast = isBefore(day, new Date())
+          const isSelected =
+            (selectedFrom && day.toDateString() === selectedFrom.toDateString()) ||
+            (selectedTo && day.toDateString() === selectedTo.toDateString())
+          const isInRange = selectedFrom && selectedTo && day > selectedFrom && day < selectedTo
+
+          return (
+            <button
+              key={day.toDateString()}
+              onClick={() => handleDateClick(day)}
+              disabled={isBooked || isPast}
+              className={`h-8 rounded text-xs font-medium transition-colors ${
+                isBooked
+                  ? "bg-red-100 text-red-600 cursor-not-allowed opacity-50"
+                  : isPast
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
+                    : isSelected
+                      ? "bg-primary text-primary-foreground"
+                      : isInRange
+                        ? "bg-primary/20 text-primary"
+                        : "bg-muted hover:bg-muted/60 text-foreground"
+              }`}
+            >
+              {format(day, "d")}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="mt-6 pt-4 border-t border-border space-y-2 text-xs">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded bg-primary"></div>
+          <span className="text-muted-foreground">Selected</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded bg-red-100"></div>
+          <span className="text-muted-foreground">Booked</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+------------------------------------------------- ./components/navigation/top-nav.tsx --------------------------------------------------
+
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { Menu, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import LanguageSwitcher from "@/components/language-switcher"
+
+interface NavigationProps {
+  isScrolled: boolean
+}
+
+const navItems = [
+  { label: "Home", href: "#hero" },
+  { label: "Property", href: "#property" },
+  { label: "Gallery", href: "#gallery" },
+  { label: "Booking", href: "#booking" },
+  { label: "Location", href: "#location" },
+  { label: "Contact", href: "#contact" },
+]
+
+export default function Navigation({ isScrolled }: NavigationProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  return (
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "bg-white shadow-lg" : "bg-primary/90 backdrop-blur-md"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 md:py-4">
+        <div className="flex items-center justify-between h-full">
+          <Link href="/" className="hidden md:flex items-center gap-2 z-50 flex-shrink-0 group">
+            <div
+              className={`${isScrolled ? "bg-primary" : "bg-white/20"} text-white backdrop-blur-sm px-3 md:px-4 py-2 md:py-2.5 rounded-sm transition-all group-hover:shadow-lg ${isScrolled ? "group-hover:bg-primary/90" : "group-hover:bg-white/30"}`}
+            >
+              <h1 className="font-serif text-sm md:text-base font-bold tracking-wider">ACQUAMARINA</h1>
+            </div>
+          </Link>
+
+          <Link href="#booking" className="md:hidden flex-shrink-0">
+            <Button
+              className={`${
+                isScrolled ? "bg-primary hover:bg-primary/90" : "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+              } text-white px-3 py-2 rounded-sm text-xs font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95`}
+            >
+              BOOK NOW
+            </Button>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-1 lg:gap-2">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                <Button
+                  variant="ghost"
+                  className={`px-3 lg:px-4 py-2 text-xs lg:text-sm tracking-wide transition-all duration-200 hover:scale-105 ${
+                    isScrolled ? "text-foreground hover:bg-muted" : "text-white hover:bg-white/10"
+                  }`}
+                >
+                  <span className="hidden lg:inline">{item.label}</span>
+                  <span className="lg:hidden">{item.label.substring(0, 3)}</span>
+                </Button>
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+            <Link href="#booking" className="hidden md:block">
+              <Button
+                className={`${
+                  isScrolled ? "bg-primary hover:bg-primary/90" : "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+                } text-white px-3 md:px-6 py-2 rounded-sm text-xs md:text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95`}
+              >
+                BOOK NOW
+              </Button>
+            </Link>
+            <LanguageSwitcher isScrolled={isScrolled} />
+            <button
+              className={`md:hidden p-2 rounded transition-all duration-200 flex-shrink-0 hover:scale-110 ${
+                isScrolled ? "text-foreground hover:bg-muted" : "text-white hover:bg-white/10"
+              }`}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-2 pb-3 border-t border-white/10 pt-2 space-y-1 animate-in fade-in slide-in-from-top-2 duration-200">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-start text-xs tracking-wide transition-colors ${isScrolled ? "text-foreground hover:bg-muted" : "text-white hover:bg-white/10"}`}
+                >
+                  {item.label}
+                </Button>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </nav>
+  )
+}
+
+------------------------------------------------- ./components/footer-separator.tsx --------------------------------------------------
+
+export default function FooterSeparator() {
+  return (
+    <div className="relative w-full h-16 bg-primary overflow-hidden">
+      {/* Subtle gradient fade */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary via-primary/95 to-primary" />
+
+      {/* Decorative line with dots */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-full max-w-4xl px-8 flex items-center gap-4">
+          {/* Left line */}
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-primary-foreground/20 to-primary-foreground/20" />
+
+          {/* Center dots */}
+          <div className="flex gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground/30" />
+            <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground/40" />
+            <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground/30" />
+          </div>
+
+          {/* Right line */}
+          <div className="flex-1 h-px bg-gradient-to-l from-transparent via-primary-foreground/20 to-primary-foreground/20" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+------------------------------------------------- ./components/footer.tsx --------------------------------------------------
+
+"use client"
+
+export default function Footer() {
+  const currentYear = new Date().getFullYear()
+
+  return (
+    <footer className="bg-primary text-primary-foreground">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 mb-12 md:mb-16">
+          {/* Brand */}
+          <div className="hidden md:block">
+            <h3 className="font-serif text-xl md:text-2xl font-bold mb-3 md:mb-4">Luxury</h3>
+            <p className="text-primary-foreground/70 text-xs md:text-sm leading-relaxed">
+              Experience the epitome of coastal luxury with our exquisite holiday retreat.
+            </p>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-3 md:mb-4 text-primary-foreground">
+              Navigation
+            </h4>
+            <ul className="space-y-2 text-xs md:text-sm">
+              {["Home", "Property", "Gallery", "Booking", "Contact"].map((link) => (
+                <li key={link}>
+                  <a
+                    href="#"
+                    className="text-primary-foreground/70 hover:text-primary-foreground hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-2 group"
+                  >
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Policies */}
+          <div>
+            <h4 className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-3 md:mb-4 text-primary-foreground">
+              Information
+            </h4>
+            <ul className="space-y-2 text-xs md:text-sm">
+              {["Terms", "Privacy", "Cancellation", "FAQs", "Support"].map((link) => (
+                <li key={link}>
+                  <a
+                    href="#"
+                    className="text-primary-foreground/70 hover:text-primary-foreground hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-2 group"
+                  >
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div className="hidden md:block">
+            <h4 className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-3 md:mb-4 text-primary-foreground">
+              Contact
+            </h4>
+            <ul className="space-y-2 md:space-y-3 text-xs md:text-sm">
+              <li>
+                <a
+                  href="mailto:acquamarina.marzamemi@gmail.com"
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                >
+                  acquamarina.marzamemi@gmail.com
+                </a>
+              </li>
+              <li>
+                <a
+                  href="tel:+393501159152"
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                >
+                  +39 3501159152
+                </a>
+              </li>
+              <li className="pt-1 md:pt-2">
+                <div className="flex gap-3 md:gap-4">
+                  {["Instagram", "Facebook", "WhatsApp"].map((social) => (
+                    <a
+                      key={social}
+                      href={
+                        social === "WhatsApp"
+                          ? "https://wa.me/393501159152?text=Ciao%2C%20sono%20interessato%20a%20prenotare%20MarzaGem%20Holiday%20Home"
+                          : "#"
+                      }
+                      className="text-primary-foreground/70 hover:text-primary-foreground hover:scale-110 transition-all duration-200 text-xs hover:underline"
+                    >
+                      {social}
+                    </a>
+                  ))}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-primary-foreground/20 pt-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 md:gap-4 text-xs text-primary-foreground/60">
+            <p>&copy; {currentYear} Acquamarina Marzamemi. All rights reserved.</p>
+            <p className="hidden sm:block">Designed with elegance for your perfect escape</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+------------------------------------------------- ./components/language-switcher.tsx --------------------------------------------------
+
+"use client"
+
+import { useState } from "react"
+import { Globe } from "lucide-react"
+
+interface LanguageSwitcherProps {
+  isScrolled: boolean
+  isMobile?: boolean
+}
+
+export default function LanguageSwitcher({ isScrolled, isMobile = false }: LanguageSwitcherProps) {
+  const [selectedLanguage, setSelectedLanguage] = useState<"IT" | "EN">("EN")
+
+  const languages = [
+    { code: "IT", label: "Italiano" },
+    { code: "EN", label: "English" },
+  ] as const
+
+  if (isMobile) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2">
+        <Globe size={16} className={isScrolled ? "text-foreground" : "text-white"} />
+        <div className="flex gap-1">
+          {languages.map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => setSelectedLanguage(lang.code)}
+              className={`px-3 py-1.5 text-xs font-medium rounded transition-all duration-200 ${
+                selectedLanguage === lang.code
+                  ? isScrolled
+                    ? "bg-primary text-white"
+                    : "bg-white/20 text-white backdrop-blur-sm"
+                  : isScrolled
+                    ? "text-muted-foreground hover:bg-muted"
+                    : "text-white/70 hover:bg-white/10"
+              }`}
+            >
+              {lang.code}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-sm border transition-all duration-200 hover:scale-105">
+      <Globe size={14} className={`${isScrolled ? "text-muted-foreground" : "text-white/80"} transition-colors`} />
+      <div className="flex gap-0.5">
+        {languages.map((lang) => (
+          <button
+            key={lang.code}
+            onClick={() => setSelectedLanguage(lang.code)}
+            className={`px-2 py-0.5 text-xs font-medium rounded transition-all duration-200 ${
+              selectedLanguage === lang.code
+                ? isScrolled
+                  ? "bg-primary text-white"
+                  : "bg-white/20 text-white backdrop-blur-sm"
+                : isScrolled
+                  ? "text-muted-foreground hover:bg-muted"
+                  : "text-white/70 hover:bg-white/10"
+            }`}
+            aria-label={`Switch to ${lang.label}`}
+          >
+            {lang.code}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+------------------------------------------------- ./lib/utils.ts --------------------------------------------------
+
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+------------------------------------------------- ./eslint.config.mjs --------------------------------------------------
+
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+];
+
+export default eslintConfig;
+
+------------------------------------------------- ./next.config.ts --------------------------------------------------
+
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;

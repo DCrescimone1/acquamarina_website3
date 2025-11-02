@@ -2,21 +2,23 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { useTranslation } from "@/lib/hooks/useTranslation"
 
 export default function PropertyDescriptionSection() {
   const [isVisible, setIsVisible] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     setIsVisible(true)
   }, [])
 
   const amenities = [
-    { icon: "🛏️", title: "Luxury Bedrooms", description: "Premium linens and bespoke furnishings" },
-    { icon: "🍽️", title: "Gourmet Kitchen", description: "State-of-the-art appliances" },
-    { icon: "🏊", title: "Private Pool", description: "Heated infinity pool with sea views" },
-    { icon: "🌅", title: "Terrace", description: "Panoramic ocean vistas" },
-    { icon: "📺", title: "Entertainment", description: "Premium smart home systems" },
-    { icon: "🧘", title: "Wellness", description: "Spa and meditation spaces" },
+    { icon: "🛏️", title: t('property.amenities.bedrooms.title'), description: t('property.amenities.bedrooms.description') },
+    { icon: "🍽️", title: t('property.amenities.kitchen.title'), description: t('property.amenities.kitchen.description') },
+    { icon: "🏊", title: t('property.amenities.pool.title'), description: t('property.amenities.pool.description') },
+    { icon: "🌅", title: t('property.amenities.terrace.title'), description: t('property.amenities.terrace.description') },
+    { icon: "📺", title: t('property.amenities.entertainment.title'), description: t('property.amenities.entertainment.description') },
+    { icon: "🧘", title: t('property.amenities.wellness.title'), description: t('property.amenities.wellness.description') },
   ]
 
   return (
@@ -25,9 +27,7 @@ export default function PropertyDescriptionSection() {
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-            A Unique
-            <br />
-            Location
+            {t('property.sectionTitle')}
           </h2>
         </div>
 
@@ -52,18 +52,15 @@ export default function PropertyDescriptionSection() {
             }`}
           >
             <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 md:mb-6">
-              Hope Cove
+              {t('property.locationTitle')}
             </h3>
 
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4 md:mb-6">
-              Nestled on the edge of the sandy beach, this exquisite property offers breathtaking panoramic views of
-              pristine coastlines. Every detail has been thoughtfully curated to provide the ultimate luxury experience.
+              {t('property.description')}
             </p>
 
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-6 md:mb-8">
-              The residence seamlessly blends contemporary design with timeless elegance, featuring premium materials,
-              bespoke furnishings, and cutting-edge amenities throughout. Perfect for discerning travelers seeking an
-              unforgettable coastal escape.
+              {t('property.detailedDescription')}
             </p>
 
             {/* Quick Stats */}
@@ -73,7 +70,7 @@ export default function PropertyDescriptionSection() {
                   4
                 </p>
                 <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">
-                  Bedrooms
+                  {t('property.stats.bedrooms')}
                 </p>
               </div>
               <div className="group hover:scale-105 transition-transform duration-200">
@@ -81,14 +78,14 @@ export default function PropertyDescriptionSection() {
                   3
                 </p>
                 <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">
-                  Bathrooms
+                  {t('property.stats.bathrooms')}
                 </p>
               </div>
               <div className="group hover:scale-105 transition-transform duration-200">
                 <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-primary transition-colors group-hover:text-accent">
                   2800
                 </p>
-                <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">Sq M</p>
+                <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">{t('property.stats.area')}</p>
               </div>
             </div>
           </div>
@@ -97,7 +94,7 @@ export default function PropertyDescriptionSection() {
         {/* Amenities Grid */}
         <div className="mt-12 md:mt-20 lg:mt-32">
           <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground text-center mb-8 md:mb-16">
-            Premium Amenities
+            {t('property.amenitiesTitle')}
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
