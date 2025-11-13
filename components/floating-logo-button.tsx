@@ -160,13 +160,13 @@ export default function FloatingLogoButton() {
           {/* Chat Header */}
           <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
                 <Image
                   src="/logo.webp"
                   alt="Acquamarina"
                   width={40}
                   height={40}
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 object-cover rounded-full"
                 />
               </div>
               <div>
