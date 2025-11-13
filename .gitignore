@@ -14,6 +14,10 @@
 /coverage
 .kiro
 marzapage_dump.txt
+test-*.ts
+verify-*.ts
+TASK-*-SUMMARY.md
+LANGUAGE-DETECTION-GUIDE.md
 
 # next.js
 /.next/

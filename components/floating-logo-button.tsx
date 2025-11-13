@@ -2,24 +2,122 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
-import { X, Send } from "lucide-react"
+import { X, Send, AlertCircle, RefreshCw } from "lucide-react"
 import { useTranslation } from "@/lib/hooks/useTranslation"
+
+// Message interface for type safety
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+}
+
+// Chat state interface
+interface ChatState {
+  messages: Message[]
+  isLoading: boolean
+  error: string | null
+}
 
 export default function FloatingLogoButton() {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [message, setMessage] = useState("")
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (message.trim()) {
-      // TODO: Implement chat functionality
-      console.log("[v0] Message sent:", message)
-      setMessage("")
+  
+  // Chat state management
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Ref for auto-scrolling
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  // Auto-scroll to latest message
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
+  }, [messages])
+
+  // Send message function
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!message.trim() || isLoading) return
+
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: 'user',
+      content: message.trim(),
+      timestamp: new Date()
+    }
+
+    // Add user message to chat
+    setMessages(prev => [...prev, userMessage])
+    setMessage("")
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      // Prepare conversation history (last 10 message pairs)
+      const history = messages.slice(-20).map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }))
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage.content,
+          history
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to get response' }))
+        throw new Error(errorData.error || `Server error: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      const assistantMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: data.message,
+        timestamp: new Date(data.timestamp || new Date())
+      }
+
+      setMessages(prev => [...prev, assistantMessage])
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+      setError(errorMessage)
+      console.error('Chat error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Retry last message
+  const handleRetry = () => {
+    if (messages.length > 0) {
+      const lastUserMessage = [...messages].reverse().find(msg => msg.role === 'user')
+      if (lastUserMessage) {
+        setMessage(lastUserMessage.content)
+        setError(null)
+      }
+    }
+  }
+
+  // Format timestamp
+  const formatTime = (date: Date) => {
+    return new Intl.DateTimeFormat('default', {
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date)
   }
 
   return (
@@ -89,23 +187,109 @@ export default function FloatingLogoButton() {
           <div className="h-80 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white">
             <div className="space-y-4">
               {/* Welcome Message */}
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
-                  <Image
-                    src="/logo.webp"
-                    alt="Acquamarina"
-                    width={32}
-                    height={32}
-                    className="w-6 h-6 object-contain"
-                  />
+              {messages.length === 0 && (
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
+                    <Image
+                      src="/logo.webp"
+                      alt="Acquamarina"
+                      width={32}
+                      height={32}
+                      className="w-6 h-6 object-contain"
+                    />
+                  </div>
+                  <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 max-w-[80%]">
+                    <p className="text-sm text-gray-700 leading-relaxed">{t('chat.welcome.greeting')}</p>
+                    <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                      {t('chat.welcome.question')}
+                    </p>
+                  </div>
                 </div>
-                <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 max-w-[80%]">
-                  <p className="text-sm text-gray-700 leading-relaxed">{t('chat.welcome.greeting')}</p>
-                  <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                    {t('chat.welcome.question')}
-                  </p>
+              )}
+
+              {/* Message History */}
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
+                      <Image
+                        src="/logo.webp"
+                        alt="Acquamarina"
+                        width={32}
+                        height={32}
+                        className="w-6 h-6 object-contain"
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-col max-w-[80%]">
+                    <div
+                      className={`rounded-2xl px-4 py-3 shadow-sm ${
+                        msg.role === 'user'
+                          ? 'bg-primary text-white rounded-tr-sm'
+                          : 'bg-white border border-gray-100 rounded-tl-sm'
+                      }`}
+                    >
+                      <p className={`text-sm leading-relaxed whitespace-pre-wrap ${
+                        msg.role === 'user' ? 'text-white' : 'text-gray-700'
+                      }`}>
+                        {msg.content}
+                      </p>
+                    </div>
+                    <span className={`text-xs text-gray-400 mt-1 px-2 ${
+                      msg.role === 'user' ? 'text-right' : 'text-left'
+                    }`}>
+                      {formatTime(msg.timestamp)}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              ))}
+
+              {/* Loading Indicator */}
+              {isLoading && (
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
+                    <Image
+                      src="/logo.webp"
+                      alt="Acquamarina"
+                      width={32}
+                      height={32}
+                      className="w-6 h-6 object-contain"
+                    />
+                  </div>
+                  <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {error && (
+                <div className="flex gap-3 items-start">
+                  <div className="w-8 h-8 rounded-full bg-red-100 flex-shrink-0 flex items-center justify-center">
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                  </div>
+                  <div className="flex-1 bg-red-50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-red-100">
+                    <p className="text-sm text-red-700 leading-relaxed">{error}</p>
+                    <button
+                      onClick={handleRetry}
+                      className="mt-2 text-xs text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Auto-scroll anchor */}
+              <div ref={messagesEndRef} />
             </div>
           </div>
 
@@ -117,11 +301,12 @@ export default function FloatingLogoButton() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={t('chat.input.placeholder')}
-                className="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                disabled={isLoading}
+                className="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
-                disabled={!message.trim()}
+                disabled={!message.trim() || isLoading}
                 className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                 aria-label={t('chat.aria.sendMessage')}
               >
