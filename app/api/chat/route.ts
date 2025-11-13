@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findRelevantContext, buildPrompt, generateResponse, validateEnvironment, getConfigurationErrorMessage } from '@/lib/chat';
+import { loadAllContext, buildPrompt, generateResponse, validateEnvironment, getConfigurationErrorMessage, responseCache } from '@/lib/chat';
 
 // Validate environment variables at module load time
 const envValidation = validateEnvironment();
@@ -119,13 +119,26 @@ export async function POST(request: NextRequest) {
     // Limit history to last 10 message pairs (20 messages total)
     const limitedHistory = history.slice(-20);
 
-    // Step 1: Find relevant context from QnA.csv
-    let context;
+    // Check cache first
+    const cachedResponse = responseCache.get(message, limitedHistory);
+    if (cachedResponse) {
+      console.log('✓ Cache hit - returning cached response');
+      const response: ChatResponse = {
+        message: cachedResponse,
+        timestamp: new Date().toISOString()
+      };
+      return NextResponse.json(response, { status: 200 });
+    }
+
+    console.log('Cache miss - generating new response');
+
+    // Step 1: Load ALL Q&A pairs from QnA.csv (all entries)
+    let context: Array<{ question: string; answer: string }>;
     try {
-      context = findRelevantContext(message, 5);
-      console.log(`Found ${context.length} relevant Q&A pairs for query`);
+      context = loadAllContext();
+      console.log(`Loaded ${context.length} Q&A pairs (all entries)`);
     } catch (error) {
-      console.error('Context matching failed:', error);
+      console.error('Context loading failed:', error);
       // Continue without context rather than failing completely
       context = [];
     }
@@ -150,6 +163,10 @@ export async function POST(request: NextRequest) {
     let assistantMessage;
     try {
       assistantMessage = await generateResponse(systemPrompt, message, limitedHistory);
+      
+      // Store in cache for future requests
+      responseCache.set(message, limitedHistory, assistantMessage);
+      console.log(`✓ Response cached (cache size: ${responseCache.size()})`);
     } catch (error) {
       console.error('xAI API call failed:', error);
       

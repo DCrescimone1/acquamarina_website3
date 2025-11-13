@@ -80,6 +80,14 @@ function calculateScore(queryTokens: string[], questionTokens: string[]): number
 }
 
 /**
+ * Load all Q&A pairs from the knowledge base
+ * Returns all entries without filtering or scoring
+ */
+export function loadAllContext(): QAPair[] {
+  return loadQnAData();
+}
+
+/**
  * Find relevant Q&A pairs from the knowledge base based on user query
  */
 export function findRelevantContext(userQuery: string, topN: number = 5): QAPair[] {
