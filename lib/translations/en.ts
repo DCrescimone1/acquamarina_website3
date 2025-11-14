@@ -64,47 +64,51 @@ export const enTranslations: TranslationData = {
   },
   hero: {
     title: "YOUR PERFECT GETAWAY",
-    subtitle: "Luxury Retreat by the Sea",
-    description: "Experience the epitome of coastal luxury. A meticulously designed sanctuary combining contemporary comfort with timeless elegance",
+    subtitle: "",
+    description: "Just steps from the beach in a private residence, 400m from Marzamemi port. Modern comforts with Sicilian charm, fully equipped kitchen, two pools, and private parking for a peaceful stay",
     scrollText: "Scroll"
   },
   property: {
     sectionTitle: "A Unique Location",
-    locationTitle: "Hope Cove",
-    description: "Nestled on the edge of the sandy beach, this exquisite property offers breathtaking panoramic views of pristine coastlines. Every detail has been thoughtfully curated to provide the ultimate luxury experience.",
-    detailedDescription: "The residence seamlessly blends contemporary design with timeless elegance, featuring premium materials, bespoke furnishings, and cutting-edge amenities throughout. Perfect for discerning travelers seeking an unforgettable coastal escape.",
+    locationTitle: "Acquamarina",
+    description: "Just steps from the beach in a private residence, 400m from Marzamemi port. Modern comforts with Sicilian charm, a fully equipped kitchen, private garden, and private parking for a peaceful stay.",
+    detailedDescription: "Exclusive Apartment with 2 Pools in Marzamemi. 1-bedroom holiday home with air conditioning, free WiFi, private parking, fully equipped kitchen, and terrace with sea views. Pool with fenced garden. Nearby: Spiaggia Cavettone (800m), Vendicari Reserve (17km), Noto Cathedral (25km).",
     amenitiesTitle: "Premium Amenities",
     amenities: {
       bedrooms: {
-        title: "Luxury Bedrooms",
-        description: "Premium linens and bespoke furnishings"
+        title: "Sicilian Style House",
+        description: "Elegant new construction with private garden and traditional architecture"
       },
       kitchen: {
-        title: "Gourmet Kitchen",
-        description: "State-of-the-art appliances"
+        title: "Luxury Resort",
+        description: "Located in an exclusive luxury resort with reserved private parking"
       },
       pool: {
-        title: "Private Pool",
-        description: "Heated infinity pool with sea views"
+        title: "Two Pools",
+        description: "Pools with jacuzzi and panoramic infinity pool"
       },
       terrace: {
-        title: "Terrace",
-        description: "Panoramic ocean vistas"
+        title: "Steps from the Sea",
+        description: "To the beach and crystal-clear sea"
       },
       entertainment: {
-        title: "Entertainment",
-        description: "Premium smart home systems"
+        title: "Sports & Entertainment",
+        description: "Padel courts and beach volleyball for leisure and competition"
       },
       wellness: {
-        title: "Wellness",
-        description: "Spa and meditation spaces"
+        title: "Outdoor Fitness",
+        description: "Fully equipped outdoor gym with panoramic cycling track"
       }
     },
     stats: {
-      bedrooms: "Bedrooms",
-      bathrooms: "Bathrooms",
+      bedrooms: "Sleeping Spots",
+      bathrooms: "Bathroom",
       area: "Sq M"
     }
+  },
+  gallery: {
+    title: "Visual Tour",
+    subtitle: "Explore the beauty of our property with our curated photo collection"
   },
   booking: {
     title: "Secure Your Stay",
@@ -161,6 +165,40 @@ export const enTranslations: TranslationData = {
       sending: "Sending...",
       sent: "Message Sent!",
       error: "There was a problem sending your message. Please try again."
+    }
+  },
+  location: {
+    title: "Where We Are",
+    subtitle: "Nestled in a breathtaking coastal setting with easy access to local attractions and amenities",
+    address: {
+      label: "Address",
+      value: "Contrada Calafarina SNC, Marzamemi (SR) 96018, Italy, Borgo84"
+    },
+    coordinates: {
+      label: "Coordinates",
+      value: "36.723632, 15.117694"
+    },
+    nearby: {
+      label: "Nearby",
+      value: "Marzamemi port (400m), Beach (1 min)"
+    },
+    gettingHere: {
+      title: "Getting Here",
+      items: [
+        "Comiso Airport: 82 km, Catania Airport: 100 km",
+        "Free private parking on-site, no reservation needed",
+        "Local restaurants and shops in Marzamemi center (2 min)",
+        "Direct access to the beach (5 min walk)"
+      ]
+    },
+    whatsNearby: {
+      title: "What's Nearby",
+      items: [
+        "Spiaggia Cavettone (800m) - Beautiful sandy beach",
+        "Vendicari Reserve (17km) - Nature reserve and protected area",
+        "Noto Cathedral (25km) - Historic Baroque architecture",
+        "La Cialoma restaurant - Authentic Sicilian cuisine in Marzamemi center"
+      ]
     }
   },
   whatsapp: {

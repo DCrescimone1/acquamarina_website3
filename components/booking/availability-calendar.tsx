@@ -160,14 +160,14 @@ export default function AvailabilityCalendar({
               disabled={isBooked || isPast}
               className={`h-8 rounded text-xs font-medium transition-colors ${
                 isBooked
-                  ? "bg-red-100 text-red-600 cursor-not-allowed opacity-50"
+                  ? "bg-rose-200 text-rose-800 cursor-not-allowed font-semibold"
                   : isPast
                     ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
                     : isSelected
                       ? "bg-primary text-primary-foreground"
                       : isInRange
                         ? "bg-primary/20 text-primary"
-                        : "bg-muted hover:bg-muted/60 text-foreground"
+                        : "bg-[#e8f4f4] hover:bg-[#d4e9e9] text-foreground"
               }`}
             >
               {format(day, "d")}
@@ -183,7 +183,7 @@ export default function AvailabilityCalendar({
           <span className="text-muted-foreground">{t('booking.calendar.legend.selected')}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-red-100"></div>
+          <div className="w-3 h-3 rounded bg-rose-200"></div>
           <span className="text-muted-foreground">{t('booking.calendar.legend.booked')}</span>
         </div>
       </div>

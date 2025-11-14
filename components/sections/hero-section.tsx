@@ -34,25 +34,15 @@ export default function HeroSection() {
         }`}
       >
         <h1
-          className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 md:mb-6 tracking-wider drop-shadow-lg animate-fade-in text-balance"
+          className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 md:mb-8 tracking-wider drop-shadow-lg animate-fade-in text-balance"
           style={{ animationDelay: "400ms" }}
         >
           {t('hero.title')}
         </h1>
 
-        {/* Decorative badge */}
-        <div
-          className="inline-block border-2 border-white/50 rounded-full px-6 md:px-8 py-2 md:py-3 mb-6 md:mb-8 hover:border-white/80 transition-colors animate-fade-in"
-          style={{ animationDelay: "600ms" }}
-        >
-          <p className="text-xs md:text-base text-white/90 tracking-widest uppercase font-light">
-            {t('hero.subtitle')}
-          </p>
-        </div>
-
         <p
           className="text-sm md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light px-2 animate-fade-in"
-          style={{ animationDelay: "800ms" }}
+          style={{ animationDelay: "600ms" }}
         >
           {t('hero.description')}
         </p>

@@ -87,6 +87,10 @@ export interface TranslationData {
       area: string
     }
   }
+  gallery: {
+    title: string
+    subtitle: string
+  }
   booking: {
     title: string
     subtitle: string
@@ -142,6 +146,30 @@ export interface TranslationData {
       sending: string
       sent: string
       error: string
+    }
+  }
+  location: {
+    title: string
+    subtitle: string
+    address: {
+      label: string
+      value: string
+    }
+    coordinates: {
+      label: string
+      value: string
+    }
+    nearby: {
+      label: string
+      value: string
+    }
+    gettingHere: {
+      title: string
+      items: string[]
+    }
+    whatsNearby: {
+      title: string
+      items: string[]
     }
   }
   whatsapp: {
@@ -252,9 +280,16 @@ export type TranslationKey =
   | `property.${keyof TranslationData['property']}`
   | `property.amenities.${keyof TranslationData['property']['amenities']}.${keyof TranslationData['property']['amenities']['bedrooms']}`
   | `property.stats.${keyof TranslationData['property']['stats']}`
+  | `gallery.${keyof TranslationData['gallery']}`
   | `booking.${keyof TranslationData['booking']}`
   | `contact.${keyof TranslationData['contact']}`
   | `contact.form.${keyof TranslationData['contact']['form']}`
+  | `location.${keyof TranslationData['location']}`
+  | `location.address.${keyof TranslationData['location']['address']}`
+  | `location.coordinates.${keyof TranslationData['location']['coordinates']}`
+  | `location.nearby.${keyof TranslationData['location']['nearby']}`
+  | `location.gettingHere.${keyof TranslationData['location']['gettingHere']}`
+  | `location.whatsNearby.${keyof TranslationData['location']['whatsNearby']}`
   | `whatsapp.${keyof TranslationData['whatsapp']}`
   | `chat.${keyof TranslationData['chat']}`
   | `chat.header.${keyof TranslationData['chat']['header']}`

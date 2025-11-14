@@ -160,55 +160,46 @@ export default function BookingSection() {
     }
   }
 
-  const handleBooking = async () => {
-    // Validation
-    if (!checkIn || !checkOut) {
-      alert(t('booking.selectDatesError'))
-      return
+  /**
+   * Handle direct booking through Stripe
+   */
+  async function handleDirectBooking(
+    checkInParam: string,
+    checkOutParam: string,
+    guestsParam: number,
+    totalAmountParam: number,
+    languageParam: 'it' | 'en',
+  ) {
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bookingDetails: {
+            checkIn: checkInParam,
+            checkOut: checkOutParam,
+            guests: guestsParam,
+            totalAmount: totalAmountParam,
+            language: languageParam,
+          },
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to create checkout session')
+      }
+
+      const data = await response.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        throw new Error('No checkout URL received')
+      }
+    } catch (error) {
+      console.error('Booking error:', error)
+      alert('Failed to start booking process. Please try again.')
     }
-
-    const checkInDate = new Date(checkIn)
-    const checkOutDate = new Date(checkOut)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    if (checkInDate < today) {
-      alert(t('validation.pastDate'))
-      return
-    }
-
-    if (checkOutDate <= checkInDate) {
-      alert(t('validation.invalidDateRange'))
-      return
-    }
-
-    if (adults < 1) {
-      alert(t('validation.minGuests'))
-      return
-    }
-
-    if (adults + children > 6) {
-      alert(t('validation.maxGuests'))
-      return
-    }
-
-    // Calculate price based on nights
-    const nights = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))
-    const pricePerNight = 250
-    const totalPrice = nights * pricePerNight
-
-    // Redirect to payment/confirmation page
-    const params = new URLSearchParams({
-      checkIn,
-      checkOut,
-      adults: adults.toString(),
-      children: children.toString(),
-      pets: pets.toString(),
-      price: totalPrice.toString(),
-      currency: "€",
-    })
-
-    window.location.href = `/booking-confirmation?${params}`
   }
 
   return (
@@ -316,13 +307,63 @@ export default function BookingSection() {
                 )}
               </Button>
 
-              <Button onClick={handleBooking} className="w-full bg-primary/80 hover:bg-primary/70 text-white h-11">
+              <Button
+                onClick={() => {
+                  // Basic validation mirroring availability checks
+                  if (!checkIn || !checkOut) {
+                    alert(t('booking.selectDatesError'))
+                    return
+                  }
+                  const checkInDate = new Date(checkIn)
+                  const checkOutDate = new Date(checkOut)
+                  const today = new Date()
+                  today.setHours(0, 0, 0, 0)
+                  if (checkInDate < today) {
+                    alert(t('validation.pastDate'))
+                    return
+                  }
+                  if (checkOutDate <= checkInDate) {
+                    alert(t('validation.invalidDateRange'))
+                    return
+                  }
+                  if (adults < 1) {
+                    alert(t('validation.minGuests'))
+                    return
+                  }
+                  if (adults + children > 6) {
+                    alert(t('validation.maxGuests'))
+                    return
+                  }
+                  const nights = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))
+                  const pricePerNight = 250
+                  const totalPrice = nights * pricePerNight
+                  handleDirectBooking(
+                    checkIn,
+                    checkOut,
+                    adults + children,
+                    totalPrice,
+                    language,
+                  )
+                }}
+                className="w-full bg-primary/80 hover:bg-primary/70 text-white h-11"
+              >
                 {t('booking.proceedBooking')}
               </Button>
             </div>
 
             {/* Price Comparison Results */}
-            {searchResults && <PriceComparison results={searchResults} />}
+            {searchResults && (
+              <PriceComparison 
+                results={searchResults}
+                bookingDetails={{
+                  checkIn,
+                  checkOut,
+                  guests: adults + children,
+                  language
+                }}
+                onDirectBooking={handleDirectBooking}
+              />
+            )}
           </div>
 
           {/* Right Column - Calendar */}

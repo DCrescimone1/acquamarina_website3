@@ -64,47 +64,51 @@ export const itTranslations: TranslationData = {
   },
   hero: {
     title: "LA TUA FUGA PERFETTA",
-    subtitle: "Rifugio di Lusso sul Mare",
-    description: "Vivi l'epitome del lusso costiero. Un santuario meticolosamente progettato che combina comfort contemporaneo con eleganza senza tempo",
+    subtitle: "",
+    description: "A pochi passi dalla spiaggia in una residenza privata, a 400m dal porto di Marzamemi. Comfort moderni con fascino siciliano, cucina completamente attrezzata, due piscine e parcheggio privato per un soggiorno tranquillo",
     scrollText: "Scorri"
   },
   property: {
     sectionTitle: "Una Posizione Unica",
-    locationTitle: "Hope Cove",
-    description: "Situata ai margini della spiaggia sabbiosa, questa squisita proprietà offre viste panoramiche mozzafiato di coste incontaminate. Ogni dettaglio è stato pensato con cura per offrire l'esperienza di lusso definitiva.",
-    detailedDescription: "La residenza fonde perfettamente il design contemporaneo con l'eleganza senza tempo, caratterizzata da materiali premium, arredi su misura e servizi all'avanguardia in ogni ambiente. Perfetta per viaggiatori esigenti che cercano una fuga costiera indimenticabile.",
+    locationTitle: "Acquamarina",
+    description: "A pochi passi dalla spiaggia in una residenza privata, a 400m dal porto di Marzamemi. Confort moderni con fascino siciliano, cucina completamente attrezzata, giardino privato e parcheggio privato per un soggiorno tranquillo.",
+    detailedDescription: "Appartamento esclusivo con 2 piscine a Marzamemi. Casa vacanze con 1 camera da letto, aria condizionata, WiFi gratuito, parcheggio privato, cucina completamente attrezzata e terrazza con vista mare. Piscina con giardino recintato. Nelle vicinanze: Spiaggia Cavettone (800m), Riserva di Vendicari (17km), Cattedrale di Noto (25km).",
     amenitiesTitle: "Servizi Premium",
     amenities: {
       bedrooms: {
-        title: "Camere da Letto di Lusso",
-        description: "Biancheria premium e arredi su misura"
+        title: "Casa in Stile Siciliano",
+        description: "Nuova costruzione elegante con giardinetto privato e architettura tradizionale"
       },
       kitchen: {
-        title: "Cucina Gourmet",
-        description: "Elettrodomestici all'avanguardia"
+        title: "Luxury Resort",
+        description: "Situata in un esclusivo luxury resort con posti auto privati riservati"
       },
       pool: {
-        title: "Piscina Privata",
-        description: "Piscina a sfioro riscaldata con vista mare"
+        title: "Due Piscine",
+        description: "Piscine con idromassaggio e piscina a sfioro panoramica"
       },
       terrace: {
-        title: "Terrazza",
-        description: "Viste panoramiche sull'oceano"
+        title: "Mare a Due Passi",
+        description: "Alla spiaggia e al mare cristallino"
       },
       entertainment: {
-        title: "Intrattenimento",
-        description: "Sistemi smart home premium"
+        title: "Sport e Divertimento",
+        description: "Campi da padel e beach volley per momenti di svago e competizione"
       },
       wellness: {
-        title: "Benessere",
-        description: "Spazi spa e meditazione"
+        title: "Fitness all'Aperto",
+        description: "Palestra all'aperto attrezzata con pista ciclabile panoramica"
       }
     },
     stats: {
-      bedrooms: "Camere da Letto",
-      bathrooms: "Bagni",
+      bedrooms: "Posti Letto",
+      bathrooms: "Bagno",
       area: "Mq"
     }
+  },
+  gallery: {
+    title: "Tour Virtuale",
+    subtitle: "Esplora la bellezza della nostra proprietà con la nostra collezione fotografica curata"
   },
   booking: {
     title: "Assicura il Tuo Soggiorno",
@@ -161,6 +165,40 @@ export const itTranslations: TranslationData = {
       sending: "Invio in corso...",
       sent: "Messaggio Inviato!",
       error: "C'è stato un problema nell'invio del messaggio. Riprova."
+    }
+  },
+  location: {
+    title: "Dove Siamo",
+    subtitle: "Situata in un incantevole ambiente costiero con facile accesso alle attrazioni locali e ai servizi",
+    address: {
+      label: "Indirizzo",
+      value: "Contrada Calafarina SNC, Marzamemi (SR) 96018, Italia, Borgo84"
+    },
+    coordinates: {
+      label: "Coordinate",
+      value: "36.723632, 15.117694"
+    },
+    nearby: {
+      label: "Nelle Vicinanze",
+      value: "Porto di Marzamemi (400m), Spiaggia (1 min)"
+    },
+    gettingHere: {
+      title: "Come Arrivare",
+      items: [
+        "Aeroporto di Comiso: 82 km, Aeroporto di Catania: 100 km",
+        "Parcheggio privato gratuito in loco, nessuna prenotazione necessaria",
+        "Ristoranti e negozi locali nel centro di Marzamemi (2 min)",
+        "Accesso diretto alla spiaggia (5 min a piedi)"
+      ]
+    },
+    whatsNearby: {
+      title: "Cosa C'è Nelle Vicinanze",
+      items: [
+        "Spiaggia Cavettone (800m) - Bellissima spiaggia sabbiosa",
+        "Riserva di Vendicari (17km) - Riserva naturale e area protetta",
+        "Cattedrale di Noto (25km) - Architettura barocca storica",
+        "Ristorante La Cialoma - Autentica cucina siciliana nel centro di Marzamemi"
+      ]
     }
   },
   whatsapp: {

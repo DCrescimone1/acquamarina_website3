@@ -147,7 +147,7 @@
   }
 
   section {
-    @apply py-16 md:py-24 lg:py-32;
+    @apply py-8 md:py-12 lg:py-16;
   }
 }
 

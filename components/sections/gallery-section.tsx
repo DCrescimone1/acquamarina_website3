@@ -4,10 +4,11 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslation } from "@/lib/hooks/useTranslation"
 
 export default function GallerySection() {
+  const { t } = useTranslation()
   const [currentPage, setCurrentPage] = useState(0)
-  const [columnsPerPage, setColumnsPerPage] = useState(3)
   const [autoRotate, setAutoRotate] = useState(true)
 
   // Sample gallery images - replace with actual images
@@ -18,30 +19,13 @@ export default function GallerySection() {
     size: i % 6, // 0-5 for varied sizes
   }))
 
-  // Calculate responsive columns
-  useEffect(() => {
-    const updateColumns = () => {
-      if (window.innerWidth < 640) {
-        setColumnsPerPage(1) // Mobile: 3 images total (1 column layout)
-      } else if (window.innerWidth < 1024) {
-        setColumnsPerPage(2)
-      } else {
-        setColumnsPerPage(3)
-      }
-    }
-
-    updateColumns()
-    window.addEventListener("resize", updateColumns)
-    return () => window.removeEventListener("resize", updateColumns)
-  }, [])
-
   // Auto-rotate pages every 5 seconds
   useEffect(() => {
     if (!autoRotate) return
 
     const timer = setInterval(() => {
       setCurrentPage((prev) => {
-        const maxPages = Math.ceil(galleryImages.length / 9)
+        const maxPages = Math.ceil(galleryImages.length / 3)
         return (prev + 1) % maxPages
       })
     }, 5000)
@@ -49,7 +33,8 @@ export default function GallerySection() {
     return () => clearInterval(timer)
   }, [autoRotate, galleryImages.length])
 
-  const itemsPerPage = columnsPerPage === 1 ? 2 : 9
+  // Always show 3 images per page: 2 smaller in first column, 1 bigger in second column
+  const itemsPerPage = 3
   const maxPages = Math.ceil(galleryImages.length / itemsPerPage)
   const startIdx = currentPage * itemsPerPage
   const currentImages = galleryImages.slice(startIdx, startIdx + itemsPerPage)
@@ -64,58 +49,66 @@ export default function GallerySection() {
     setCurrentPage((prev) => (prev + 1) % maxPages)
   }
 
-  const getMobileGridClasses = (index: number) => {
-    // Mobile: reduce vertical height by showing only 2 evenly sized images per page
-    if (index === 0) return "col-span-1 row-span-1"
-    if (index === 1) return "col-span-1 row-span-1"
-    return "col-span-1 row-span-1"
-  }
-
-  const getGridClasses = (index: number) => {
-    // Mobile: use special 3-image layout
-    if (columnsPerPage === 1) {
-      return getMobileGridClasses(index)
-    }
-
-    // Tablet/Desktop: original masonry pattern
-    const sizePattern = [
-      "col-span-1 row-span-1",
-      "col-span-2 row-span-2",
-      "col-span-1 row-span-1",
-      "col-span-1 row-span-2",
-      "col-span-2 row-span-1",
-      "col-span-1 row-span-1",
-    ]
-    return sizePattern[index % 6]
-  }
-
   return (
     <section className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">Visual Tour</h2>
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">{t('gallery.title')}</h2>
           <p className="mt-3 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore the beauty of our property with our curated photo collection
+            {t('gallery.subtitle')}
           </p>
         </div>
 
-        {/* Gallery Grid with Masonry Layout */}
+        {/* Gallery Mosaic Layout */}
         <div className="relative">
-          <div className="grid gap-3 md:gap-4 mb-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-3 auto-rows-[150px] md:auto-rows-[280px]">
-            {currentImages.map((image, idx) => (
+          {/* Flexbox container for mosaic layout */}
+          <div className="flex gap-3 md:gap-4 mb-8 h-[312px] md:h-[576px]">
+            {/* Left column: 2 stacked images */}
+            <div className="flex flex-col gap-3 md:gap-4 flex-1">
+              {currentImages.slice(0, 2).map((image, idx) => (
+                <div
+                  key={image.id}
+                  className="relative flex-1 rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 group cursor-pointer animate-in fade-in"
+                  style={{ animationDelay: `${idx * 50}ms` }}
+                >
+                  <Image
+                    src={image.src || "/placeholder.svg"}
+                    alt={image.alt}
+                    fill
+                    className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                    quality={75}
+                    sizes="(max-width: 640px) 33vw, (max-width: 1024px) 33vw, 33vw"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                    <div className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <svg className="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Right column: 1 tall image */}
+            {currentImages[2] && (
               <div
-                key={image.id}
-                className={`${getGridClasses(idx)} relative rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 group cursor-pointer animate-in fade-in`}
-                style={{ animationDelay: `${idx * 50}ms` }}
+                className="relative flex-[2] rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 group cursor-pointer animate-in fade-in"
+                style={{ animationDelay: '100ms' }}
               >
                 <Image
-                  src={image.src || "/placeholder.svg"}
-                  alt={image.alt}
+                  src={currentImages[2].src || "/placeholder.svg"}
+                  alt={currentImages[2].alt}
                   fill
                   className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
                   quality={75}
-                  sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
+                  sizes="(max-width: 640px) 66vw, (max-width: 1024px) 66vw, 66vw"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
                   <div className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -130,7 +123,7 @@ export default function GallerySection() {
                   </div>
                 </div>
               </div>
-            ))}
+            )}
           </div>
 
           {/* Pagination Indicator & Controls */}

@@ -13,12 +13,12 @@ export default function PropertyDescriptionSection() {
   }, [])
 
   const amenities = [
-    { icon: "🛏️", title: t('property.amenities.bedrooms.title'), description: t('property.amenities.bedrooms.description') },
-    { icon: "🍽️", title: t('property.amenities.kitchen.title'), description: t('property.amenities.kitchen.description') },
-    { icon: "🏊", title: t('property.amenities.pool.title'), description: t('property.amenities.pool.description') },
-    { icon: "🌅", title: t('property.amenities.terrace.title'), description: t('property.amenities.terrace.description') },
-    { icon: "📺", title: t('property.amenities.entertainment.title'), description: t('property.amenities.entertainment.description') },
-    { icon: "🧘", title: t('property.amenities.wellness.title'), description: t('property.amenities.wellness.description') },
+    { icon: "🏡", title: t('property.amenities.bedrooms.title'), description: t('property.amenities.bedrooms.description') },
+    { icon: "🏨", title: t('property.amenities.kitchen.title'), description: t('property.amenities.kitchen.description') },
+    { icon: "🏊‍♀️", title: t('property.amenities.pool.title'), description: t('property.amenities.pool.description') },
+    { icon: "🌊", title: t('property.amenities.terrace.title'), description: t('property.amenities.terrace.description') },
+    { icon: "🎾", title: t('property.amenities.entertainment.title'), description: t('property.amenities.entertainment.description') },
+    { icon: "🚴", title: t('property.amenities.wellness.title'), description: t('property.amenities.wellness.description') },
   ]
 
   return (
@@ -75,7 +75,7 @@ export default function PropertyDescriptionSection() {
               </div>
               <div className="group hover:scale-105 transition-transform duration-200">
                 <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-primary transition-colors group-hover:text-accent">
-                  3
+                  1
                 </p>
                 <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">
                   {t('property.stats.bathrooms')}
@@ -83,7 +83,7 @@ export default function PropertyDescriptionSection() {
               </div>
               <div className="group hover:scale-105 transition-transform duration-200">
                 <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-primary transition-colors group-hover:text-accent">
-                  2800
+                  36
                 </p>
                 <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide mt-1 md:mt-2">{t('property.stats.area')}</p>
               </div>
