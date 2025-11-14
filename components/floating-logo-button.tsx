@@ -33,15 +33,16 @@ export default function FloatingLogoButton() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
-  // Ref for auto-scrolling
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  
-  // Auto-scroll to latest message
+  // Ref for chat scroll container
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+  // Scroll chat container to bottom when messages change or chat opens
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, [messages])
+    if (!messagesContainerRef.current) return
+    if (!isChatOpen && messages.length === 0) return
+    const el = messagesContainerRef.current
+    el.scrollTop = el.scrollHeight
+  }, [messages, isChatOpen])
 
   // Send message function
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -184,7 +185,7 @@ export default function FloatingLogoButton() {
           </div>
 
           {/* Chat Body */}
-          <div className="h-80 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white">
+          <div ref={messagesContainerRef} className="h-80 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white">
             <div className="space-y-4">
               {/* Welcome Message */}
               {messages.length === 0 && (
@@ -288,8 +289,7 @@ export default function FloatingLogoButton() {
                 </div>
               )}
 
-              {/* Auto-scroll anchor */}
-              <div ref={messagesEndRef} />
+              {/* End of messages */}
             </div>
           </div>
 

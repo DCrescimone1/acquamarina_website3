@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, AlertCircle } from "lucide-react"
+import { formatDateDDMMYYYY } from "@/lib/utils/date-format"
 
 export default function BookingConfirmationPage() {
   const searchParams = useSearchParams()
@@ -42,15 +43,11 @@ export default function BookingConfirmationPage() {
             <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border">
               <div>
                 <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Check In</p>
-                <p className="font-serif text-xl font-semibold text-foreground">
-                  {new Date(checkIn).toLocaleDateString()}
-                </p>
+                <p className="font-serif text-xl font-semibold text-foreground">{formatDateDDMMYYYY(checkIn)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">Check Out</p>
-                <p className="font-serif text-xl font-semibold text-foreground">
-                  {new Date(checkOut).toLocaleDateString()}
-                </p>
+                <p className="font-serif text-xl font-semibold text-foreground">{formatDateDDMMYYYY(checkOut)}</p>
               </div>
             </div>
 

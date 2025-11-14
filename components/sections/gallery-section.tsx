@@ -49,7 +49,7 @@ export default function GallerySection() {
     return () => clearInterval(timer)
   }, [autoRotate, galleryImages.length])
 
-  const itemsPerPage = columnsPerPage === 1 ? 3 : 9
+  const itemsPerPage = columnsPerPage === 1 ? 2 : 9
   const maxPages = Math.ceil(galleryImages.length / itemsPerPage)
   const startIdx = currentPage * itemsPerPage
   const currentImages = galleryImages.slice(startIdx, startIdx + itemsPerPage)
@@ -65,9 +65,9 @@ export default function GallerySection() {
   }
 
   const getMobileGridClasses = (index: number) => {
-    if (index === 0) return "col-span-1 row-span-1" // Small top-left
-    if (index === 1) return "col-span-1 row-span-1" // Small top-right
-    if (index === 2) return "col-span-2 row-span-2" // Large bottom
+    // Mobile: reduce vertical height by showing only 2 evenly sized images per page
+    if (index === 0) return "col-span-1 row-span-1"
+    if (index === 1) return "col-span-1 row-span-1"
     return "col-span-1 row-span-1"
   }
 

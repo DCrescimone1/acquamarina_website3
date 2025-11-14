@@ -5,12 +5,23 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isAfter, isBefore } from "date-fns"
 import { useTranslation } from "@/lib/hooks/useTranslation"
+import { cn } from "@/lib/utils"
 
 interface AvailabilityCalendarProps {
   onDateSelect?: (dates: { from: string; to: string }) => void
+  className?: string
+  sticky?: boolean
+  initialFrom?: string
+  initialTo?: string
 }
 
-export default function AvailabilityCalendar({ onDateSelect }: AvailabilityCalendarProps) {
+export default function AvailabilityCalendar({
+  onDateSelect,
+  className,
+  sticky = true,
+  initialFrom,
+  initialTo,
+}: AvailabilityCalendarProps) {
   const { t } = useTranslation()
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [bookedDates, setBookedDates] = useState<any[]>([])
@@ -34,6 +45,20 @@ export default function AvailabilityCalendar({ onDateSelect }: AvailabilityCalen
 
     fetchBookedDates()
   }, [])
+
+  useEffect(() => {
+    if (initialFrom) {
+      setSelectedFrom(new Date(initialFrom))
+    } else {
+      setSelectedFrom(null)
+    }
+
+    if (initialTo) {
+      setSelectedTo(new Date(initialTo))
+    } else {
+      setSelectedTo(null)
+    }
+  }, [initialFrom, initialTo])
 
   const isDateBooked = (date: Date) => {
     return bookedDates.some((booking) => {
@@ -72,7 +97,13 @@ export default function AvailabilityCalendar({ onDateSelect }: AvailabilityCalen
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-6 border border-border sticky top-24">
+    <div
+      className={cn(
+        "bg-white rounded-lg shadow-xl p-6 border border-border",
+        sticky ? "sticky top-24" : "",
+        className
+      )}
+    >
       <div className="flex items-center justify-between mb-6">
         <h3 className="font-serif text-lg font-bold text-foreground">{format(currentMonth, "MMMM yyyy")}</h3>
         <div className="flex gap-2">

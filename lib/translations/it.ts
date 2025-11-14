@@ -123,6 +123,9 @@ export const itTranslations: TranslationData = {
     priceComparison: "Confronto Prezzi",
     bestPrice: "Miglior Prezzo",
     view: "Visualizza",
+    platforms: {
+      direct: "Prenotazione Diretta"
+    },
     calendar: {
       weekdays: {
         sun: "Dom",

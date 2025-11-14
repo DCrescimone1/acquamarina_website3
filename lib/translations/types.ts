@@ -104,6 +104,9 @@ export interface TranslationData {
     priceComparison: string
     bestPrice: string
     view: string
+    platforms: {
+      direct: string
+    }
     calendar: {
       weekdays: {
         sun: string

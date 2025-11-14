@@ -1,12 +1,48 @@
 "use client"
 
-import { useState } from "react"
-import { Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import AvailabilityCalendar from "@/components/booking/availability-calendar"
 import PriceComparison from "@/components/booking/price-comparison"
 import { useTranslation } from "@/lib/hooks/useTranslation"
+import { formatDateDDMMYYYY } from "@/lib/utils/date-format"
+
+const formatDisplayFromIso = (value: string): string => {
+  const formatted = formatDateDDMMYYYY(value, "")
+  if (!formatted) return ""
+  return formatted.replace(/\//g, " / ")
+}
+
+const formatDigitsToDisplay = (digits: string): string => {
+  if (digits.length <= 2) return digits
+  if (digits.length <= 4) return `${digits.slice(0, 2)} / ${digits.slice(2)}`
+  return `${digits.slice(0, 2)} / ${digits.slice(2, 4)} / ${digits.slice(4)}`
+}
+
+const digitsToIso = (digits: string): string | null => {
+  if (digits.length !== 8) return null
+  const day = Number.parseInt(digits.slice(0, 2), 10)
+  const month = Number.parseInt(digits.slice(2, 4), 10)
+  const year = Number.parseInt(digits.slice(4), 10)
+
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null
+
+  const iso = `${year.toString().padStart(4, "0")}-${digits.slice(2, 4)}-${digits.slice(0, 2)}`
+  const date = new Date(iso)
+
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() + 1 !== month ||
+    date.getUTCDate() !== day
+  ) {
+    return null
+  }
+
+  return iso
+}
 
 export default function BookingSection() {
   const { t, language } = useTranslation()
@@ -17,6 +53,57 @@ export default function BookingSection() {
   const [pets, setPets] = useState(false)
   const [loading, setLoading] = useState(false)
   const [searchResults, setSearchResults] = useState(null)
+  const [checkInInput, setCheckInInput] = useState("")
+  const [checkOutInput, setCheckOutInput] = useState("")
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+  const [activeField, setActiveField] = useState<"checkIn" | "checkOut">("checkIn")
+  const datePlaceholder = language === "en" ? "dd / mm / yyyy" : "gg / mm / aaaa"
+
+  const openCalendar = (field: "checkIn" | "checkOut") => {
+    setActiveField(field)
+    setIsCalendarOpen(true)
+  }
+
+  const closeCalendar = () => setIsCalendarOpen(false)
+
+  useEffect(() => {
+    if (!isCalendarOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeCalendar()
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [isCalendarOpen])
+
+  const processDateInput = (
+    rawValue: string,
+    setDisplay: (value: string) => void,
+    setIso: (value: string) => void
+  ) => {
+    const digits = rawValue.replace(/\D/g, "").slice(0, 8)
+    const formatted = formatDigitsToDisplay(digits)
+    setDisplay(formatted)
+
+    if (digits.length === 0) {
+      setIso("")
+      return
+    }
+
+    if (digits.length === 8) {
+      const iso = digitsToIso(digits)
+      if (iso) {
+        setIso(iso)
+        setDisplay(formatDisplayFromIso(iso))
+        return
+      }
+    }
+
+    setIso("")
+  }
 
   const handleCheckAvailability = async () => {
     // Validation
@@ -149,15 +236,28 @@ export default function BookingSection() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">{t('booking.checkIn')}</label>
-                  <Input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full" />
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder={datePlaceholder}
+                    value={checkInInput}
+                    onChange={(e) => processDateInput(e.target.value, setCheckInInput, setCheckIn)}
+                    onFocus={() => openCalendar("checkIn")}
+                    onClick={() => openCalendar("checkIn")}
+                    className="w-full"
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">{t('booking.checkOut')}</label>
                   <Input
-                    type="date"
-                    value={checkOut}
-                    onChange={(e) => setCheckOut(e.target.value)}
+                    type="text"
+                    inputMode="numeric"
+                    placeholder={datePlaceholder}
+                    value={checkOutInput}
+                    onChange={(e) => processDateInput(e.target.value, setCheckOutInput, setCheckOut)}
+                    onFocus={() => openCalendar("checkOut")}
+                    onClick={() => openCalendar("checkOut")}
                     className="w-full"
                   />
                 </div>
@@ -228,14 +328,55 @@ export default function BookingSection() {
           {/* Right Column - Calendar */}
           <div className="lg:col-span-1">
             <AvailabilityCalendar
+              initialFrom={checkIn || undefined}
+              initialTo={checkOut || undefined}
               onDateSelect={(dates) => {
                 setCheckIn(dates.from)
+                setCheckInInput(formatDisplayFromIso(dates.from))
                 setCheckOut(dates.to)
+                setCheckOutInput(formatDisplayFromIso(dates.to))
               }}
             />
           </div>
         </div>
       </div>
+      {isCalendarOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8"
+          onClick={closeCalendar}
+        >
+          <div
+            className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              onClick={closeCalendar}
+              className="absolute top-4 right-4 p-2 rounded-full bg-muted hover:bg-muted/80 text-foreground"
+              aria-label="Close calendar"
+            >
+              <X size={18} />
+            </button>
+            <div className="p-6">
+              <h4 className="font-serif text-xl font-semibold text-foreground mb-4">
+                {activeField === "checkIn" ? t('booking.checkIn') : t('booking.checkOut')}
+              </h4>
+              <AvailabilityCalendar
+                sticky={false}
+                className="shadow-none border-0"
+                initialFrom={checkIn || undefined}
+                initialTo={checkOut || undefined}
+                onDateSelect={(dates) => {
+                  setCheckIn(dates.from)
+                  setCheckInInput(formatDisplayFromIso(dates.from))
+                  setCheckOut(dates.to)
+                  setCheckOutInput(formatDisplayFromIso(dates.to))
+                  setIsCalendarOpen(false)
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Loader2, AlertCircle } from "lucide-react"
+import { formatDateDDMMYYYY } from "@/lib/utils/date-format"
 
 export default function PaymentPage() {
   const searchParams = useSearchParams()
@@ -127,15 +128,11 @@ export default function PaymentPage() {
               <div className="space-y-4 mb-6 pb-6 border-b border-border">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Check In:</span>
-                  <span className="font-medium text-foreground">
-                    {checkIn ? new Date(checkIn).toLocaleDateString() : "-"}
-                  </span>
+                  <span className="font-medium text-foreground">{formatDateDDMMYYYY(checkIn)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Check Out:</span>
-                  <span className="font-medium text-foreground">
-                    {checkOut ? new Date(checkOut).toLocaleDateString() : "-"}
-                  </span>
+                  <span className="font-medium text-foreground">{formatDateDDMMYYYY(checkOut)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Guests:</span>

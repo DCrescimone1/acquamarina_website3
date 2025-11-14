@@ -123,6 +123,9 @@ export const enTranslations: TranslationData = {
     priceComparison: "Price Comparison",
     bestPrice: "Best Price",
     view: "View",
+    platforms: {
+      direct: "Direct Booking"
+    },
     calendar: {
       weekdays: {
         sun: "Sun",
