@@ -54,10 +54,16 @@ function buildBookingUrl(params: BookingSearchParams): string {
 export async function searchBookingPrice(
   params: BookingSearchParams
 ): Promise<SearchResult | null> {
-  const { browser } = params;
+  const { browser, dates } = params;
   let context;
   
   try {
+    // Calculate number of nights for safety check
+    const from = new Date(dates.from);
+    const to = new Date(dates.to);
+    const nights = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
+    const minimumPrice = nights * 40;
+    
     // Create browser context with desktop viewport and user agent
     context = await browser.newContext({
       viewport: SCRAPING_CONFIG.viewport,
@@ -108,6 +114,12 @@ export async function searchBookingPrice(
     
     if (isNaN(price)) {
       console.log('[prices] Booking.com: Invalid price value:', cleanPrice);
+      return null;
+    }
+    
+    // Safety check: price should never be lower than (nights × €40)
+    if (price < minimumPrice) {
+      console.log(`[prices] Booking.com: Price ${price} is below minimum threshold ${minimumPrice} (${nights} nights × €40)`);
       return null;
     }
     
