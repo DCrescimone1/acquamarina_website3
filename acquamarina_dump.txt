@@ -22,9 +22,11 @@ Folder structure:
 │   ├── globals.css
 │   ├── layout.tsx
 │   ├── page.tsx
-│   └── payment
-│       ├── loading.tsx
-│       └── page.tsx
+│   ├── payment
+│   │   ├── loading.tsx
+│   │   └── page.tsx
+│   └── placeholder.svg
+│       └── route.ts
 ├── CACHING-IMPLEMENTATION.md
 ├── CLAUDE.md
 ├── components
@@ -121,12 +123,13 @@ Folder structure:
 ├── test-prompt-language.ts
 ├── test-response-cache.ts
 ├── test-stripe.sh
+├── TODELETE_reference_chatbotui.md
 ├── tsconfig.json
 ├── tsconfig.tsbuildinfo
 ├── uv.lock
 └── verify-language-implementation.ts
 
-26 directories, 100 files
+27 directories, 102 files
 
 
 --- File Contents ---
