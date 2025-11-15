@@ -37,6 +37,12 @@ export default function FloatingLogoButton() {
   // Ref for chat scroll container and input
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
+  const [keyboardVisible, setKeyboardVisible] = useState(false)
+
+  // Detect mobile/tablet
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+  const isTablet = typeof window !== 'undefined' && window.innerWidth >= 640 && window.innerWidth < 1024
 
   // Scroll chat container to bottom when messages change or chat opens
   useEffect(() => {
@@ -46,17 +52,56 @@ export default function FloatingLogoButton() {
     el.scrollTop = el.scrollHeight
   }, [messages, isChatOpen])
 
-  // Handle mobile keyboard appearance
+  // Handle keyboard visibility on mobile
   useEffect(() => {
-    if (!isInputFocused || !isChatOpen) return
+    if (!isMobile && !isTablet) return
 
-    // Scroll to bottom when input is focused on mobile
-    setTimeout(() => {
+    const handleResize = () => {
+      const windowHeight = window.innerHeight
+      const visualViewport = window.visualViewport?.height || windowHeight
+      setKeyboardVisible(visualViewport < windowHeight * 0.9)
+    }
+
+    window.visualViewport?.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleResize)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [isMobile, isTablet])
+
+  // Scroll to bottom when keyboard appears or messages change
+  useEffect(() => {
+    if (!isChatOpen) return
+    
+    const scrollToBottom = () => {
       if (messagesContainerRef.current) {
         messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
       }
-    }, 300)
-  }, [isInputFocused, isChatOpen])
+    }
+
+    // Multiple scroll attempts for mobile reliability
+    if (isMobile || isTablet) {
+      scrollToBottom()
+      setTimeout(scrollToBottom, 100)
+      setTimeout(scrollToBottom, 300)
+    } else {
+      scrollToBottom()
+    }
+  }, [messages, keyboardVisible, isInputFocused, isChatOpen, isMobile, isTablet])
+
+  // Initialize welcome message when chat opens
+  useEffect(() => {
+    if (isChatOpen && messages.length === 0) {
+      // Focus input when chat opens on mobile
+      if ((isMobile || isTablet) && inputRef.current) {
+        setTimeout(() => {
+          inputRef.current?.focus()
+        }, 100)
+      }
+    }
+  }, [isChatOpen, messages.length, isMobile, isTablet])
 
   // Send message function
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -75,6 +120,13 @@ export default function FloatingLogoButton() {
     setMessage("")
     setIsLoading(true)
     setError(null)
+
+    // Scroll to bottom immediately after user sends message
+    setTimeout(() => {
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+      }
+    }, 50)
 
     try {
       // Prepare conversation history (last 10 message pairs)
@@ -167,23 +219,37 @@ export default function FloatingLogoButton() {
       </div>
 
       <div
-        className={`fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 w-[calc(100vw-2rem)] max-w-md transition-all duration-500 ease-out ${
+        ref={chatContainerRef}
+        className={`fixed z-40 transition-all duration-300 ease-out ${
           isChatOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-8 pointer-events-none"
+        } ${
+          isMobile 
+            ? keyboardVisible 
+              ? 'bottom-0 left-0 right-0 w-full' 
+              : 'bottom-4 right-4 w-[calc(100vw-2rem)]'
+            : 'bottom-8 right-8 w-[calc(100vw-2rem)] max-w-md'
         }`}
+        style={{
+          isolation: 'isolate'
+        }}
       >
-        <div className={`bg-white rounded-2xl shadow-2xl border border-primary/10 overflow-hidden ${
-          isInputFocused ? 'mb-0 max-h-[calc(100vh-2rem)] flex flex-col' : 'mb-20 md:mb-28'
+        <div className={`bg-white shadow-2xl border border-primary/10 overflow-hidden flex flex-col ${
+          isMobile 
+            ? keyboardVisible 
+              ? 'rounded-t-2xl h-[65vh] min-h-[280px]' 
+              : 'rounded-2xl h-[50vh] max-h-[600px] min-h-[350px] mb-20'
+            : 'rounded-2xl h-[600px] mb-28'
         }`}>
           {/* Chat Header */}
           <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-4 md:px-6 py-3 md:py-4 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
-              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden flex-shrink-0">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden flex-shrink-0 p-0.5">
                 <Image
                   src="/logo.webp"
                   alt="Acquamarina"
                   width={40}
                   height={40}
-                  className="w-6 h-6 md:w-8 md:h-8 object-cover rounded-full"
+                  className="w-full h-full object-cover rounded-full"
                 />
               </div>
               <div className="min-w-0">
@@ -206,23 +272,22 @@ export default function FloatingLogoButton() {
           {/* Chat Body */}
           <div 
             ref={messagesContainerRef} 
-            className={`overflow-y-auto p-4 md:p-6 bg-gradient-to-b from-gray-50 to-white ${
-              isInputFocused 
-                ? 'flex-1 min-h-0 max-h-[calc(100vh-12rem)]' 
-                : 'h-80'
-            }`}
+            className="flex-1 overflow-y-auto p-4 md:p-6 bg-gradient-to-b from-gray-50 to-white"
+            style={{
+              WebkitOverflowScrolling: 'touch'
+            }}
           >
             <div className="space-y-4">
               {/* Welcome Message */}
               {messages.length === 0 && (
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center overflow-hidden p-0.5">
                     <Image
                       src="/logo.webp"
                       alt="Acquamarina"
                       width={32}
                       height={32}
-                      className="w-6 h-6 object-contain"
+                      className="w-full h-full object-cover rounded-full"
                     />
                   </div>
                   <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 max-w-[80%]">
@@ -241,13 +306,13 @@ export default function FloatingLogoButton() {
                   className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
                 >
                   {msg.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center overflow-hidden p-0.5">
                       <Image
                         src="/logo.webp"
                         alt="Acquamarina"
                         width={32}
                         height={32}
-                        className="w-6 h-6 object-contain"
+                        className="w-full h-full object-cover rounded-full"
                       />
                     </div>
                   )}
@@ -277,13 +342,13 @@ export default function FloatingLogoButton() {
               {/* Loading Indicator */}
               {isLoading && (
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center overflow-hidden p-0.5">
                     <Image
                       src="/logo.webp"
                       alt="Acquamarina"
                       width={32}
                       height={32}
-                      className="w-6 h-6 object-contain"
+                      className="w-full h-full object-cover rounded-full"
                     />
                   </div>
                   <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100">
@@ -320,18 +385,30 @@ export default function FloatingLogoButton() {
           </div>
 
           {/* Chat Input */}
-          <div className="border-t border-gray-100 p-3 md:p-4 bg-white flex-shrink-0">
+          <div className={`border-t border-gray-100 p-3 md:p-4 bg-white flex-shrink-0 ${
+            (isMobile || isTablet) && keyboardVisible ? 'pb-2' : ''
+          }`}>
             <form onSubmit={handleSendMessage} className="flex gap-2">
               <input
                 ref={inputRef}
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                onFocus={() => setIsInputFocused(true)}
+                onFocus={() => {
+                  setIsInputFocused(true)
+                  setTimeout(() => {
+                    if (messagesContainerRef.current) {
+                      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+                    }
+                  }, 100)
+                }}
                 onBlur={() => setIsInputFocused(false)}
                 placeholder={t('chat.input.placeholder')}
                 disabled={isLoading}
-                className="flex-1 min-w-0 px-3 md:px-4 py-2.5 md:py-3 rounded-full border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 min-w-0 px-3 md:px-4 py-2.5 md:py-3 rounded-full border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  fontSize: '16px'
+                }}
               />
               <button
                 type="submit"

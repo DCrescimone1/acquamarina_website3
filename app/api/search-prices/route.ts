@@ -64,13 +64,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Helper: enforce hard timeout per provider
-    const withTimeout = async <T>(p: Promise<T>, ms: number, label: string): Promise<T | null> => {
+    // Helper: enforce hard timeout per provider and abort the underlying task
+    const withTimeout = async <T>(p: Promise<T>, ms: number, label: string, abort: AbortController): Promise<T | null> => {
       let timeoutId: NodeJS.Timeout | null = null
       try {
         const timeoutPromise = new Promise<null>((resolve) => {
           timeoutId = setTimeout(() => {
             console.warn(`[prices] ${label} timed out after ${ms}ms`)
+            try { abort.abort() } catch {}
             resolve(null)
           }, ms)
         })
@@ -84,21 +85,36 @@ export async function POST(request: NextRequest) {
     // Execute both searches in parallel using Promise.all with timeouts
     const parallelStartTime = Date.now()
     
+    const bookingAbort = new AbortController()
+    const airbnbAbort = new AbortController()
+
     const [bookingResult, airbnbResult] = await Promise.all([
       withTimeout(
-        searchBookingPrice({ dates, guests, language: resolvedLanguage, browser }),
-        6000,
-        'Booking.com'
+        searchBookingPrice({ dates, guests, language: resolvedLanguage, browser, signal: bookingAbort.signal }),
+        9000,
+        'Booking.com',
+        bookingAbort
       ),
       withTimeout(
-        searchAirbnbPrice({ dates, guests, browser }),
-        6000,
-        'Airbnb'
+        searchAirbnbPrice({ dates, guests, browser, signal: airbnbAbort.signal }),
+        8000,
+        'Airbnb',
+        airbnbAbort
       )
     ])
 
     const parallelDuration = Date.now() - parallelStartTime
-    console.log(`[prices] Both searches completed in ${parallelDuration}ms (parallel execution)`)
+    console.log(`[prices] Both searches completed in ${parallelDuration}ms (parallel execution)`) 
+    if (bookingResult) {
+      console.log('[prices] Booking.com: Result OK', bookingResult)
+    } else {
+      console.log('[prices] Booking.com: Result is null (see earlier logs for reasons)')
+    }
+    if (airbnbResult) {
+      console.log('[prices] Airbnb: Result OK', airbnbResult)
+    } else {
+      console.log('[prices] Airbnb: Result is null (see earlier logs for reasons)')
+    }
 
     // Handle case where both OTA searches return null (404 error)
     if (!bookingResult && !airbnbResult) {

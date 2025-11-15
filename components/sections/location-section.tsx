@@ -22,7 +22,7 @@ export default function LocationSection() {
         {/* Map Container */}
         <div className="rounded-lg overflow-hidden shadow-xl h-[400px] md:h-[600px] bg-muted flex items-center justify-center mb-12 md:mb-16">
           <iframe
-            src="https://www.google.com/maps?q=36.723632,15.117694&z=17&output=embed"
+            src="https://www.google.com/maps?q=36.723632,15.117694&center=36.728,15.120&z=15&output=embed"
             width="100%"
             height="100%"
             style={{ border: 0 }}

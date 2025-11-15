@@ -1,4 +1,4 @@
-import { Browser } from 'playwright';
+import { Browser, BrowserContext } from 'playwright';
 import { SearchResult } from './types';
 import { SCRAPING_CONFIG, AIRBNB_CONFIG } from './config';
 
@@ -6,6 +6,7 @@ interface AirbnbSearchParams {
   dates: { from: string; to: string };
   guests: { adults: number; children: number };
   browser: Browser;
+  signal?: AbortSignal;
 }
 
 /**
@@ -32,10 +33,11 @@ function buildAirbnbUrl(params: AirbnbSearchParams): string {
 export async function searchAirbnbPrice(
   params: AirbnbSearchParams
 ): Promise<SearchResult | null> {
-  const { browser, dates } = params;
-  let context;
+  const { browser, dates, signal } = params;
+  let context: BrowserContext | null = null;
   
   try {
+    if (signal?.aborted) return null;
     // Calculate number of nights for safety check
     const from = new Date(dates.from);
     const to = new Date(dates.to);
@@ -47,6 +49,14 @@ export async function searchAirbnbPrice(
       viewport: SCRAPING_CONFIG.viewport,
       userAgent: SCRAPING_CONFIG.userAgent,
     });
+    if (signal?.aborted) {
+      await context.close().catch(() => {});
+      return null;
+    }
+    const abortHandler = async () => {
+      try { await context?.close(); } catch {}
+    };
+    signal?.addEventListener('abort', abortHandler, { once: true });
     
     const page = await context.newPage();
     const url = buildAirbnbUrl(params);
@@ -56,15 +66,18 @@ export async function searchAirbnbPrice(
     console.log('[prices] Airbnb URL:', url);
     
     // Navigate to Airbnb URL with domcontentloaded strategy
+    if (signal?.aborted) return null;
     await page.goto(url, {
       waitUntil: 'domcontentloaded',
       timeout: SCRAPING_CONFIG.navigationTimeout,
     });
     
     // Scroll 300px down to trigger lazy-loaded content
+    if (signal?.aborted) return null;
     await page.evaluate(() => window.scrollBy(0, 300));
     
     // Wait briefly for lazy-loaded content to appear
+    if (signal?.aborted) return null;
     await page.waitForTimeout(500);
 
     // Wait for booking sidebar with multiple selector fallbacks
@@ -78,6 +91,7 @@ export async function searchAirbnbPrice(
     let sidebarFound = false;
     for (const selector of sidebarSelectors) {
       try {
+        if (signal?.aborted) return null;
         await page.waitForSelector(selector, { timeout: 1200 });
         sidebarFound = true;
         break;
@@ -104,6 +118,7 @@ export async function searchAirbnbPrice(
     
     for (const selector of priceSelectors) {
       try {
+        if (signal?.aborted) return null;
         const elements = await page.$$(selector);
         for (const element of elements) {
           const text = await element.textContent();
@@ -191,6 +206,7 @@ export async function searchAirbnbPrice(
     if (!priceText) {
       console.log('[prices] Airbnb: Using full page scan fallback');
       
+      if (signal?.aborted) return null;
       priceText = await page.evaluate(() => {
         // Use tree walker to search all text nodes
         const walker = document.createTreeWalker(
