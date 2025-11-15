@@ -149,16 +149,32 @@ export default function BookingSection() {
         }),
       })
 
-      const data = await response.json()
-      
+      // Try to parse JSON safely
+      let data: any = null
+      try {
+        data = await response.json()
+      } catch {}
+
+      // If server reported 404 (no providers returned data), show scraping error
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch prices")
+        if (response.status === 404) {
+          alert(t('booking.scrapingError'))
+          return
+        }
+        throw new Error((data && data.error) || "Failed to fetch prices")
       }
-      
-      setSearchResults(data)
+
+      // On success: only show results if we actually have some
+      if (data && Array.isArray(data.results) && data.results.length > 0) {
+        setSearchResults(data)
+      } else {
+        // Defensive: treat empty results as scraping failure
+        alert(t('booking.scrapingError'))
+      }
     } catch (error) {
       console.error("Error:", error)
-      alert(t('booking.scrapingError'))
+      // Network/unexpected errors -> availability error, not scraping failure
+      alert(t('booking.availabilityError'))
     } finally {
       setLoading(false)
     }
