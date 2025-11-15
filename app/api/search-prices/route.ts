@@ -64,12 +64,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Execute both searches in parallel using Promise.all
+    // Helper: enforce hard timeout per provider
+    const withTimeout = async <T>(p: Promise<T>, ms: number, label: string): Promise<T | null> => {
+      let timeoutId: NodeJS.Timeout | null = null
+      try {
+        const timeoutPromise = new Promise<null>((resolve) => {
+          timeoutId = setTimeout(() => {
+            console.warn(`[prices] ${label} timed out after ${ms}ms`)
+            resolve(null)
+          }, ms)
+        })
+        const result = await Promise.race<[T | null]>([p as any, timeoutPromise as any])
+        return result as unknown as T | null
+      } finally {
+        if (timeoutId) clearTimeout(timeoutId)
+      }
+    }
+
+    // Execute both searches in parallel using Promise.all with timeouts
     const parallelStartTime = Date.now()
     
     const [bookingResult, airbnbResult] = await Promise.all([
-      searchBookingPrice({ dates, guests, language: resolvedLanguage, browser }),
-      searchAirbnbPrice({ dates, guests, browser })
+      withTimeout(
+        searchBookingPrice({ dates, guests, language: resolvedLanguage, browser }),
+        6000,
+        'Booking.com'
+      ),
+      withTimeout(
+        searchAirbnbPrice({ dates, guests, browser }),
+        6000,
+        'Airbnb'
+      )
     ])
 
     const parallelDuration = Date.now() - parallelStartTime

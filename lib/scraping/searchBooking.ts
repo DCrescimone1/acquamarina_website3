@@ -75,6 +75,7 @@ export async function searchBookingPrice(
     
     console.log('[prices] Booking.com search started');
     const startTime = Date.now();
+    console.log('[prices] Booking.com URL:', url);
     
     // Navigate to Booking.com URL with domcontentloaded strategy
     await page.goto(url, {
@@ -84,16 +85,51 @@ export async function searchBookingPrice(
     
     let priceText: string | null = null;
     
-    // Wait for price element with primary selector
-    try {
-      await page.waitForSelector('.prco-valign-middle-helper', {
-        timeout: SCRAPING_CONFIG.selectorTimeout,
+    const selectors = [
+      '[data-testid="price-and-discounted-price"]',
+      'span[data-testid="price-and-discounted-price"]',
+      '.prco-valign-middle-helper',
+      'span.prco-valign-middle-helper',
+      'div.f6431b446c span',
+    ];
+    
+    for (const selector of selectors) {
+      try {
+        await page.waitForSelector(selector, { timeout: SCRAPING_CONFIG.selectorTimeout });
+        const txt = await page.textContent(selector);
+        if (txt && /[€\d]/.test(txt)) {
+          priceText = txt;
+          break;
+        }
+      } catch {
+        continue;
+      }
+    }
+    
+    if (!priceText) {
+      console.log('[prices] Booking.com: No price from selectors, attempting fallback scan');
+      priceText = await page.evaluate(() => {
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        const pricePattern = /€\s*[\d,.]+/g;
+        let node: Node | null;
+        while ((node = walker.nextNode())) {
+          const text = (node.textContent || '').trim();
+          if (!text) continue;
+          const matches = text.match(pricePattern);
+          if (matches && matches.length > 0) {
+            const parent = (node as any).parentElement as HTMLElement | null;
+            if (parent) {
+              const style = window.getComputedStyle(parent);
+              const isStrikethrough = style.textDecorationLine === 'line-through' || style.textDecoration.includes('line-through');
+              if (!isStrikethrough) {
+                return matches[0];
+              }
+            }
+            return matches[0];
+          }
+        }
+        return null;
       });
-      priceText = await page.textContent('.prco-valign-middle-helper');
-    } catch (error) {
-      // Implement fallback direct query if selector times out
-      console.log('[prices] Primary selector timed out, trying fallback');
-      priceText = await page.textContent('.prco-valign-middle-helper');
     }
     
     if (!priceText) {

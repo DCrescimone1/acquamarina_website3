@@ -132,8 +132,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply overflow-x-hidden;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
+    max-width: 100vw;
   }
 
   h1 {
@@ -186,5 +190,13 @@
 
   section + section {
     @apply border-t border-border/30;
+  }
+
+  /* Mobile-specific fixes to prevent horizontal scroll */
+  @media (max-width: 768px) {
+    body > * {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
   }
 }

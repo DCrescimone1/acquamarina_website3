@@ -32,9 +32,11 @@ export default function FloatingLogoButton() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isInputFocused, setIsInputFocused] = useState(false)
   
-  // Ref for chat scroll container
+  // Ref for chat scroll container and input
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Scroll chat container to bottom when messages change or chat opens
   useEffect(() => {
@@ -43,6 +45,18 @@ export default function FloatingLogoButton() {
     const el = messagesContainerRef.current
     el.scrollTop = el.scrollHeight
   }, [messages, isChatOpen])
+
+  // Handle mobile keyboard appearance
+  useEffect(() => {
+    if (!isInputFocused || !isChatOpen) return
+
+    // Scroll to bottom when input is focused on mobile
+    setTimeout(() => {
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+      }
+    }, 300)
+  }, [isInputFocused, isChatOpen])
 
   // Send message function
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -123,7 +137,7 @@ export default function FloatingLogoButton() {
 
   return (
     <>
-      <div className="fixed bottom-8 right-8 z-50 group">
+      <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 group">
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
           onMouseEnter={() => setIsHovered(true)}
@@ -153,31 +167,36 @@ export default function FloatingLogoButton() {
       </div>
 
       <div
-        className={`fixed bottom-8 right-8 z-40 w-[90vw] max-w-md transition-all duration-500 ease-out ${
+        className={`fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 w-[calc(100vw-2rem)] max-w-md transition-all duration-500 ease-out ${
           isChatOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-8 pointer-events-none"
         }`}
       >
-        <div className="bg-white rounded-2xl shadow-2xl border border-primary/10 overflow-hidden mb-20 md:mb-28">
+        <div className={`bg-white rounded-2xl shadow-2xl border border-primary/10 overflow-hidden ${
+          isInputFocused ? 'mb-0 max-h-[calc(100vh-2rem)] flex flex-col' : 'mb-20 md:mb-28'
+        }`}>
           {/* Chat Header */}
-          <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+          <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-4 md:px-6 py-3 md:py-4 flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden flex-shrink-0">
                 <Image
                   src="/logo.webp"
                   alt="Acquamarina"
                   width={40}
                   height={40}
-                  className="w-8 h-8 object-cover rounded-full"
+                  className="w-6 h-6 md:w-8 md:h-8 object-cover rounded-full"
                 />
               </div>
-              <div>
-                <h3 className="font-serif text-lg">{t('chat.header.title')}</h3>
-                <p className="text-xs text-white/80">{t('chat.header.subtitle')}</p>
+              <div className="min-w-0">
+                <h3 className="font-serif text-base md:text-lg truncate">{t('chat.header.title')}</h3>
+                <p className="text-xs text-white/80 truncate">{t('chat.header.subtitle')}</p>
               </div>
             </div>
             <button
-              onClick={() => setIsChatOpen(false)}
-              className="w-8 h-8 rounded-full hover:bg-white/20 transition-colors flex items-center justify-center"
+              onClick={() => {
+                setIsChatOpen(false)
+                setIsInputFocused(false)
+              }}
+              className="w-8 h-8 rounded-full hover:bg-white/20 transition-colors flex items-center justify-center flex-shrink-0"
               aria-label={t('chat.aria.closeChat')}
             >
               <X className="w-5 h-5" />
@@ -185,7 +204,14 @@ export default function FloatingLogoButton() {
           </div>
 
           {/* Chat Body */}
-          <div ref={messagesContainerRef} className="h-80 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white">
+          <div 
+            ref={messagesContainerRef} 
+            className={`overflow-y-auto p-4 md:p-6 bg-gradient-to-b from-gray-50 to-white ${
+              isInputFocused 
+                ? 'flex-1 min-h-0 max-h-[calc(100vh-12rem)]' 
+                : 'h-80'
+            }`}
+          >
             <div className="space-y-4">
               {/* Welcome Message */}
               {messages.length === 0 && (
@@ -294,23 +320,26 @@ export default function FloatingLogoButton() {
           </div>
 
           {/* Chat Input */}
-          <div className="border-t border-gray-100 p-4 bg-white">
+          <div className="border-t border-gray-100 p-3 md:p-4 bg-white flex-shrink-0">
             <form onSubmit={handleSendMessage} className="flex gap-2">
               <input
+                ref={inputRef}
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
                 placeholder={t('chat.input.placeholder')}
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 min-w-0 px-3 md:px-4 py-2.5 md:py-3 rounded-full border border-gray-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
                 disabled={!message.trim() || isLoading}
-                className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg flex-shrink-0"
                 aria-label={t('chat.aria.sendMessage')}
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </form>
           </div>

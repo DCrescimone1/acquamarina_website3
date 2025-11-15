@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Playfair_Display, Lora } from "next/font/google"
 import "./globals.css"
 import { LanguageProvider } from "@/lib/contexts"
@@ -17,12 +17,17 @@ const lora = Lora({
   weight: ["400", "500", "600", "700"],
 })
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 5.0,
+}
+
 export const metadata: Metadata = {
   title: "Rifugio di Lusso per Vacanze | Prenota la Tua Fuga Perfetta",
   description:
     "Vivi l'epitome del lusso costiero. Scopri la nostra squisita proprietà per vacanze con servizi premium, viste mozzafiato e servizio di classe mondiale. Prenota oggi la tua fuga da sogno.",
   keywords: "vacanze di lusso, casa al mare, affitto vacanze, rifugio costiero, Marzamemi, Sicilia",
-  viewport: "width=device-width, initial-scale=1.0, maximum-scale=5.0",
   openGraph: {
     title: "Acquamarina Casa Vacanze - Rifugio di Lusso",
     description: "La tua perfetta fuga costiera a Marzamemi",

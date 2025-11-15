@@ -149,12 +149,16 @@ export default function BookingSection() {
         }),
       })
 
-      if (!response.ok) throw new Error("Failed to fetch prices")
       const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch prices")
+      }
+      
       setSearchResults(data)
     } catch (error) {
       console.error("Error:", error)
-      alert(t('booking.availabilityError'))
+      alert(t('booking.scrapingError'))
     } finally {
       setLoading(false)
     }
@@ -185,12 +189,11 @@ export default function BookingSection() {
         }),
       })
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to create checkout session')
-      }
-
       const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
       if (data.url) {
         window.location.href = data.url
       } else {

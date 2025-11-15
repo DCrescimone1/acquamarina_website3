@@ -18,7 +18,6 @@ export const languagePersistence: LanguagePersistence = {
   save: (language: LanguageCode): void => {
     try {
       if (typeof window === 'undefined') {
-        console.warn('localStorage not available (SSR environment)')
         return
       }
       

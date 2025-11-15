@@ -124,6 +124,7 @@ export const itTranslations: TranslationData = {
     checking: "Verificando...",
     selectDatesError: "Seleziona le date di check-in e check-out",
     availabilityError: "Impossibile verificare la disponibilità",
+    scrapingError: "Stiamo riscontrando difficoltà tecniche nel recupero dei prezzi. Contattaci direttamente al +393501159152 o all'indirizzo acquamarina.marzamemi@gmail.com per assistenza con la tua prenotazione.",
     priceComparison: "Confronto Prezzi",
     bestPrice: "Miglior Prezzo",
     view: "Visualizza",

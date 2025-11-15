@@ -25,7 +25,7 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="w-full min-h-screen">
+    <main className="w-full min-h-screen overflow-x-hidden max-w-full">
       <Navigation isScrolled={isScrolled} />
 
       <FloatingLogoButton />

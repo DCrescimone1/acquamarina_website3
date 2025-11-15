@@ -124,6 +124,7 @@ export const enTranslations: TranslationData = {
     checking: "Checking...",
     selectDatesError: "Please select check-in and check-out dates",
     availabilityError: "Failed to check availability",
+    scrapingError: "We're experiencing technical difficulties retrieving prices. Please contact us directly at +393501159152 or acquamarina.marzamemi@gmail.com for assistance with your booking.",
     priceComparison: "Price Comparison",
     bestPrice: "Best Price",
     view: "View",

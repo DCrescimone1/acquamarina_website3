@@ -10,8 +10,8 @@ export const SCRAPING_CONFIG: ScrapingConfig = {
   },
   userAgent:
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  navigationTimeout: 15000,
-  selectorTimeout: 8000,
+  navigationTimeout: 8000,
+  selectorTimeout: 4000,
 };
 
 /**
@@ -33,7 +33,7 @@ export const BOOKING_CONFIG = {
  * Airbnb base URL
  */
 export const AIRBNB_CONFIG = {
-  baseUrl: 'https://www.airbnb.com/rooms/1151412127742161355',
+  baseUrl: 'https://www.airbnb.com/rooms/1453439455106920703',
 };
 
 /**

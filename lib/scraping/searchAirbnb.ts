@@ -53,6 +53,7 @@ export async function searchAirbnbPrice(
     
     console.log('[prices] Airbnb search started');
     const startTime = Date.now();
+    console.log('[prices] Airbnb URL:', url);
     
     // Navigate to Airbnb URL with domcontentloaded strategy
     await page.goto(url, {
@@ -63,8 +64,8 @@ export async function searchAirbnbPrice(
     // Scroll 300px down to trigger lazy-loaded content
     await page.evaluate(() => window.scrollBy(0, 300));
     
-    // Wait 1 second for lazy-loaded content to appear
-    await page.waitForTimeout(1000);
+    // Wait briefly for lazy-loaded content to appear
+    await page.waitForTimeout(500);
 
     // Wait for booking sidebar with multiple selector fallbacks
     const sidebarSelectors = [
@@ -77,7 +78,7 @@ export async function searchAirbnbPrice(
     let sidebarFound = false;
     for (const selector of sidebarSelectors) {
       try {
-        await page.waitForSelector(selector, { timeout: 2000 });
+        await page.waitForSelector(selector, { timeout: 1200 });
         sidebarFound = true;
         break;
       } catch {

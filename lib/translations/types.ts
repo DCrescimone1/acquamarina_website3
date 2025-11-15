@@ -105,6 +105,7 @@ export interface TranslationData {
     checking: string
     selectDatesError: string
     availabilityError: string
+    scrapingError: string
     priceComparison: string
     bestPrice: string
     view: string
