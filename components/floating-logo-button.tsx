@@ -40,9 +40,20 @@ export default function FloatingLogoButton() {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const [keyboardVisible, setKeyboardVisible] = useState(false)
 
-  // Detect mobile/tablet
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
-  const isTablet = typeof window !== 'undefined' && window.innerWidth >= 640 && window.innerWidth < 1024
+  // Detect mobile/tablet (set after mount to avoid SSR/client mismatch)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isTablet, setIsTablet] = useState(false)
+
+  useEffect(() => {
+    const compute = () => {
+      const width = window.innerWidth
+      setIsMobile(width < 640)
+      setIsTablet(width >= 640 && width < 1024)
+    }
+    compute()
+    window.addEventListener('resize', compute)
+    return () => window.removeEventListener('resize', compute)
+  }, [])
 
   // Scroll chat container to bottom when messages change or chat opens
   useEffect(() => {
@@ -59,14 +70,29 @@ export default function FloatingLogoButton() {
     const handleResize = () => {
       const windowHeight = window.innerHeight
       const visualViewport = window.visualViewport?.height || windowHeight
-      setKeyboardVisible(visualViewport < windowHeight * 0.9)
+      const keyboardHeight = windowHeight - visualViewport
+      
+      // Keyboard is visible if viewport height is significantly smaller
+      const isKeyboardOpen = keyboardHeight > 150
+      setKeyboardVisible(isKeyboardOpen)
+
+      // Adjust chat container position when keyboard is visible
+      if (chatContainerRef.current && isKeyboardOpen) {
+        const maxHeight = Math.min(visualViewport * 0.7, 500)
+        chatContainerRef.current.style.maxHeight = `${maxHeight}px`
+      }
     }
 
+    // Initial check
+    handleResize()
+
     window.visualViewport?.addEventListener('resize', handleResize)
+    window.visualViewport?.addEventListener('scroll', handleResize)
     window.addEventListener('resize', handleResize)
 
     return () => {
       window.visualViewport?.removeEventListener('resize', handleResize)
+      window.visualViewport?.removeEventListener('scroll', handleResize)
       window.removeEventListener('resize', handleResize)
     }
   }, [isMobile, isTablet])
@@ -86,10 +112,26 @@ export default function FloatingLogoButton() {
       scrollToBottom()
       setTimeout(scrollToBottom, 100)
       setTimeout(scrollToBottom, 300)
+      if (keyboardVisible) {
+        // Extra scroll when keyboard is visible
+        setTimeout(scrollToBottom, 500)
+      }
     } else {
       scrollToBottom()
     }
   }, [messages, keyboardVisible, isInputFocused, isChatOpen, isMobile, isTablet])
+
+  // Prevent body scroll when chat is open on mobile
+  useEffect(() => {
+    if (!isMobile || !isChatOpen) return
+
+    const originalStyle = window.getComputedStyle(document.body).overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = originalStyle
+    }
+  }, [isChatOpen, isMobile])
 
   // Initialize welcome message when chat opens
   useEffect(() => {
@@ -220,26 +262,45 @@ export default function FloatingLogoButton() {
 
       <div
         ref={chatContainerRef}
-        className={`fixed z-40 transition-all duration-300 ease-out ${
+        className={`fixed z-40 transition-all duration-200 ease-out ${
           isChatOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-8 pointer-events-none"
         } ${
           isMobile 
             ? keyboardVisible 
-              ? 'bottom-0 left-0 right-0 w-full' 
+              ? 'inset-x-0 w-full' 
               : 'bottom-4 right-4 w-[calc(100vw-2rem)]'
             : 'bottom-8 right-8 w-[calc(100vw-2rem)] max-w-md'
         }`}
         style={{
-          isolation: 'isolate'
+          isolation: 'isolate',
+          ...(isMobile && keyboardVisible && typeof window !== 'undefined' && window.visualViewport
+            ? {
+                bottom: 0,
+                top: 'auto',
+                height: `${Math.min(window.visualViewport.height * 0.7, 500)}px`
+              }
+            : {})
         }}
       >
-        <div className={`bg-white shadow-2xl border border-primary/10 overflow-hidden flex flex-col ${
+        <div className={`bg-white shadow-2xl border border-primary/10 overflow-hidden flex flex-col h-full ${
           isMobile 
             ? keyboardVisible 
-              ? 'rounded-t-2xl h-[65vh] min-h-[280px]' 
-              : 'rounded-2xl h-[50vh] max-h-[600px] min-h-[350px] mb-20'
-            : 'rounded-2xl h-[600px] mb-28'
-        }`}>
+              ? 'rounded-t-2xl' 
+              : 'rounded-2xl mb-20'
+            : 'rounded-2xl mb-28'
+        }`}
+        style={{
+          ...(isMobile && !keyboardVisible 
+            ? { 
+                height: '50vh',
+                maxHeight: '600px',
+                minHeight: '350px'
+              }
+            : !isMobile 
+              ? { height: '600px' }
+              : {})
+        }}
+        >
           {/* Chat Header */}
           <div className="bg-gradient-to-r from-primary to-primary/90 text-white px-4 md:px-6 py-3 md:py-4 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
@@ -385,9 +446,12 @@ export default function FloatingLogoButton() {
           </div>
 
           {/* Chat Input */}
-          <div className={`border-t border-gray-100 p-3 md:p-4 bg-white flex-shrink-0 ${
-            (isMobile || isTablet) && keyboardVisible ? 'pb-2' : ''
-          }`}>
+          <div 
+            className="border-t border-gray-100 p-3 md:p-4 bg-white flex-shrink-0"
+            style={{
+              paddingBottom: (isMobile || isTablet) && keyboardVisible ? '8px' : undefined
+            }}
+          >
             <form onSubmit={handleSendMessage} className="flex gap-2">
               <input
                 ref={inputRef}

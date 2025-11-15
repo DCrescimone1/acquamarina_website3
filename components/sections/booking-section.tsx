@@ -220,14 +220,14 @@ export default function BookingSection() {
         </div>
 
         {/* Booking Widget */}
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Left Column - Search & Calendar */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-xl p-8 md:p-12 border border-border mb-8">
+            <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 border border-border mb-6 sm:mb-8">
               {/* Quick Search */}
-              <h3 className="font-serif text-2xl font-bold text-foreground mb-6">{t('booking.findDatesTitle')}</h3>
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">{t('booking.findDatesTitle')}</h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 sm:mb-6">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">{t('booking.checkIn')}</label>
                   <Input
@@ -257,7 +257,7 @@ export default function BookingSection() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4 sm:mb-6">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">{t('booking.adults')}</label>
                   <Input
@@ -298,7 +298,7 @@ export default function BookingSection() {
               <Button
                 onClick={handleCheckAvailability}
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-white h-11 mb-6"
+                className="w-full bg-primary hover:bg-primary/90 text-white h-11 mb-4 sm:mb-6"
               >
                 {loading ? (
                   <>
@@ -370,7 +370,7 @@ export default function BookingSection() {
           </div>
 
           {/* Right Column - Calendar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 order-first lg:order-last">
             <AvailabilityCalendar
               initialFrom={checkIn || undefined}
               initialTo={checkOut || undefined}

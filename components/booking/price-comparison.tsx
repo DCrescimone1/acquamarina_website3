@@ -58,8 +58,8 @@ export default function PriceComparison({ results, bookingDetails, onDirectBooki
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-8 border border-border">
-      <h3 className="font-serif text-2xl font-bold text-foreground mb-6">{t('booking.priceComparison')}</h3>
+    <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 md:p-8 border border-border">
+      <h3 className="font-serif text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">{t('booking.priceComparison')}</h3>
 
       <div className="space-y-3">
         {sortedResults.map((result, index) => {
@@ -70,24 +70,24 @@ export default function PriceComparison({ results, bookingDetails, onDirectBooki
           return (
             <div
               key={result.platform}
-              className={`p-4 rounded-lg border transition-all ${
+              className={`p-3 sm:p-4 rounded-lg border transition-all ${
                 isBestPrice ? "border-green-400 bg-green-50" : "border-border hover:shadow-md"
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-foreground">{result.platform}</p>
-                  {isBestPrice && <p className="text-xs text-green-600 font-medium">{t('booking.bestPrice')}</p>}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground text-sm sm:text-base truncate">{result.platform}</p>
+                  {isBestPrice && <p className="text-xs text-green-600 font-medium mt-1">{t('booking.bestPrice')}</p>}
                 </div>
-                <div className="text-right flex flex-col items-end gap-2">
-                  <p className="text-2xl font-bold text-primary">
+                <div className="text-right flex flex-col items-end gap-2 flex-shrink-0">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-primary whitespace-nowrap">
                     {result.currency}
                     {price}
                   </p>
                   {isDirect && bookingDetails && onDirectBooking ? (
                     <Button
                       onClick={() => handleDirectBookingClick(result)}
-                      className="bg-primary hover:bg-primary/90 text-white h-9 text-sm px-4"
+                      className="bg-primary hover:bg-primary/90 text-white h-9 text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap"
                     >
                       {t('booking.proceedBooking')}
                     </Button>

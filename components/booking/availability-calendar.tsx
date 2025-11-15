@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isAfter, isBefore } from "date-fns"
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isAfter, isBefore, startOfToday } from "date-fns"
 import { useTranslation } from "@/lib/hooks/useTranslation"
 import { cn } from "@/lib/utils"
 
@@ -23,11 +23,14 @@ export default function AvailabilityCalendar({
   initialTo,
 }: AvailabilityCalendarProps) {
   const { t } = useTranslation()
-  const [currentMonth, setCurrentMonth] = useState(new Date())
+  // Initialize after mount to avoid SSR/client time mismatches
+  const [currentMonth, setCurrentMonth] = useState<Date | null>(null)
   const [bookedDates, setBookedDates] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedFrom, setSelectedFrom] = useState<Date | null>(null)
   const [selectedTo, setSelectedTo] = useState<Date | null>(null)
+  const [today, setToday] = useState<Date | null>(null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const fetchBookedDates = async () => {
@@ -44,6 +47,13 @@ export default function AvailabilityCalendar({
     }
 
     fetchBookedDates()
+  }, [])
+
+  // Set currentMonth and today on mount (client-only)
+  useEffect(() => {
+    setCurrentMonth(startOfToday())
+    setToday(startOfToday())
+    setMounted(true)
   }, [])
 
   useEffect(() => {
@@ -68,13 +78,15 @@ export default function AvailabilityCalendar({
     })
   }
 
+  const effectiveMonth = currentMonth ?? startOfToday()
   const days = eachDayOfInterval({
-    start: startOfMonth(currentMonth),
-    end: endOfMonth(currentMonth),
+    start: startOfMonth(effectiveMonth),
+    end: endOfMonth(effectiveMonth),
   })
 
   const handleDateClick = (date: Date) => {
-    if (isDateBooked(date) || isBefore(date, new Date())) return
+    const isPast = today ? isBefore(date, today) : false
+    if (isDateBooked(date) || isPast) return
 
     if (!selectedFrom || (selectedFrom && selectedTo)) {
       setSelectedFrom(date)
@@ -96,21 +108,37 @@ export default function AvailabilityCalendar({
     )
   }
 
+  // Avoid SSR/client mismatch by only rendering date-dependent UI after mount
+  if (!mounted) {
+    return (
+      <div
+        className={cn(
+          "bg-white rounded-lg shadow-xl p-6 border border-border",
+          sticky ? "sticky top-24" : "",
+          className
+        )}
+        aria-hidden
+      >
+        <div className="h-80" />
+      </div>
+    )
+  }
+
   return (
     <div
       className={cn(
-        "bg-white rounded-lg shadow-xl p-6 border border-border",
+        "bg-white rounded-lg shadow-xl p-4 sm:p-6 border border-border",
         sticky ? "sticky top-24" : "",
         className
       )}
     >
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-serif text-lg font-bold text-foreground">{format(currentMonth, "MMMM yyyy")}</h3>
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h3 className="font-serif text-base sm:text-lg font-bold text-foreground">{format(effectiveMonth, "MMMM yyyy")}</h3>
         <div className="flex gap-2">
           <Button
             size="icon"
             variant="outline"
-            onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))}
+            onClick={() => currentMonth && setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))}
             className="h-8 w-8"
           >
             <ChevronLeft size={16} />
@@ -118,7 +146,7 @@ export default function AvailabilityCalendar({
           <Button
             size="icon"
             variant="outline"
-            onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
+            onClick={() => currentMonth && setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
             className="h-8 w-8"
           >
             <ChevronRight size={16} />
@@ -127,7 +155,7 @@ export default function AvailabilityCalendar({
       </div>
 
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 gap-2 mb-2">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
         {[
           t('booking.calendar.weekdays.sun'),
           t('booking.calendar.weekdays.mon'),
@@ -137,17 +165,17 @@ export default function AvailabilityCalendar({
           t('booking.calendar.weekdays.fri'),
           t('booking.calendar.weekdays.sat')
         ].map((day) => (
-          <div key={day} className="text-center text-xs font-semibold text-muted-foreground">
+          <div key={day} className="text-center text-[10px] sm:text-xs font-semibold text-muted-foreground">
             {day}
           </div>
         ))}
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2">
         {days.map((day) => {
           const isBooked = isDateBooked(day)
-          const isPast = isBefore(day, new Date())
+          const isPast = today ? isBefore(day, today) : false
           const isSelected =
             (selectedFrom && day.toDateString() === selectedFrom.toDateString()) ||
             (selectedTo && day.toDateString() === selectedTo.toDateString())
@@ -158,7 +186,7 @@ export default function AvailabilityCalendar({
               key={day.toDateString()}
               onClick={() => handleDateClick(day)}
               disabled={isBooked || isPast}
-              className={`h-8 rounded text-xs font-medium transition-colors ${
+              className={`h-7 sm:h-8 md:h-9 rounded text-xs font-medium transition-colors ${
                 isBooked
                   ? "bg-rose-200 text-rose-800 cursor-not-allowed font-semibold"
                   : isPast
@@ -177,7 +205,7 @@ export default function AvailabilityCalendar({
       </div>
 
       {/* Legend */}
-      <div className="mt-6 pt-4 border-t border-border space-y-2 text-xs">
+      <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-border space-y-2 text-xs">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded bg-primary"></div>
           <span className="text-muted-foreground">{t('booking.calendar.legend.selected')}</span>

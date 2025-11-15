@@ -1,10 +1,15 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useTranslation } from "@/lib/hooks/useTranslation"
 
 export default function Footer() {
   const { t, utils } = useTranslation()
-  const currentYear = new Date().getFullYear()
+  const [currentYear, setCurrentYear] = useState<number | null>(null)
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear())
+  }, [])
 
   return (
     <footer className="bg-primary text-primary-foreground">
@@ -116,7 +121,7 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-primary-foreground/20 pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 md:gap-4 text-xs text-primary-foreground/60">
-            <p>&copy; {currentYear} {t('footer.copyright')}</p>
+            <p>&copy; {currentYear ?? ""} {t('footer.copyright')}</p>
             <p className="hidden sm:block">{t('footer.tagline')}</p>
           </div>
         </div>
