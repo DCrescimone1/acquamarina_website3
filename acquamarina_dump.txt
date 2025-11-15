@@ -110,19 +110,23 @@ Folder structure:
 │   ├── searchAirbnb_details.md
 │   ├── searchBooking_details.md
 │   └── types_and_integration.md
+├── STRIPE-SETUP-COMPLETE.md
 ├── TASK-5-SUMMARY.md
 ├── test-cache-integration.ts
 ├── test-env-validation.ts
 ├── test-language-detection.ts
 ├── test-load-all-context.ts
+├── test-production-keys.ts
+├── test-production-ready.ts
 ├── test-prompt-language.ts
 ├── test-response-cache.ts
+├── test-stripe.sh
 ├── tsconfig.json
 ├── tsconfig.tsbuildinfo
 ├── uv.lock
 └── verify-language-implementation.ts
 
-26 directories, 96 files
+26 directories, 100 files
 
 
 --- File Contents ---
