@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     const [bookingResult, airbnbResult] = await Promise.all([
       withTimeout(
         searchBookingPrice({ dates, guests, language: resolvedLanguage, browser, signal: bookingAbort.signal }),
-        9000,
+        15000, // Increased from 9000ms to 15000ms for slower hardware (Raspberry Pi)
         'Booking.com',
         bookingAbort
       ),

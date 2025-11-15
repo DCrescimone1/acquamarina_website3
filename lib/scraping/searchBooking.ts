@@ -175,8 +175,14 @@ export async function searchBookingPrice(
       }
       if (clicked) {
         if (signal?.aborted) return null;
-        await page.waitForLoadState('domcontentloaded', { timeout: 2000 }).catch(() => {});
-        await page.waitForTimeout(400).catch(() => {});
+        // Wait longer for slower hardware - wait for network to settle
+        await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {
+          // Fallback to domcontentloaded if networkidle times out
+          return page.waitForLoadState('domcontentloaded', { timeout: 3000 }).catch(() => {});
+        });
+        // Additional wait for dynamic content to render on slower hardware
+        await page.waitForTimeout(1500).catch(() => {});
+        console.log('[prices] Booking.com: Waited for page to settle after CTA click');
       }
     } catch {
       reasons.push('availability-cta-skip');
@@ -186,10 +192,13 @@ export async function searchBookingPrice(
     try {
       if (signal?.aborted) return null;
       await page.evaluate(() => window.scrollBy(0, 400));
-      await page.waitForTimeout(350);
+      await page.waitForTimeout(500);
+      // Scroll more to ensure table is in viewport
+      await page.evaluate(() => window.scrollBy(0, 600));
+      await page.waitForTimeout(500);
     } catch {}
 
-    // Wait for availability/room table container to be present
+    // Wait for availability/room table container to be present with longer timeout for slower hardware
     try {
       if (signal?.aborted) return null;
       const availabilitySelectors = [
@@ -200,18 +209,24 @@ export async function searchBookingPrice(
         '.hprt-price-block',
       ];
       let found = false;
+      // Try waiting for any of these selectors with increased timeout for Raspberry Pi
       for (const sel of availabilitySelectors) {
         try {
-          await page.waitForSelector(sel, { timeout: 1800 });
+          // Increased timeout from 1800ms to 4000ms for slower hardware
+          await page.waitForSelector(sel, { timeout: 4000, state: 'attached' });
           console.log('[prices] Booking.com: Availability container found via', sel);
           found = true;
+          // Wait a bit more for content to fully render
+          await page.waitForTimeout(300).catch(() => {});
           break;
         } catch {
           reasons.push(`availability-container-timeout:${sel}`);
         }
       }
       if (!found) {
-        console.log('[prices] Booking.com: Availability container not detected yet, continuing');
+        console.log('[prices] Booking.com: Availability container not detected yet, continuing anyway');
+        // Even if not found, wait a bit more - content might be loading
+        await page.waitForTimeout(1000).catch(() => {});
       }
     } catch {
       reasons.push('availability-container-check-error');
@@ -222,7 +237,7 @@ export async function searchBookingPrice(
     // Short settle then bulk scan early to avoid long per-selector waits
     try {
       if (signal?.aborted) return null;
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500);
       const earlyText = await page.evaluate(() => (document.body.textContent || '').replace(/\u00A0/g, ' '));
       const earlyMatch = earlyText.match(/€\s*[\d.,]+/);
       if (earlyMatch) {
@@ -251,10 +266,12 @@ export async function searchBookingPrice(
       '[data-hotel-rounded-price]',
     ];
     
+    // Try selectors with increased timeout for slower hardware
     for (const selector of selectors) {
       try {
         if (signal?.aborted) return null;
-        await page.waitForSelector(selector, { timeout: 800 });
+        // Increased timeout from 800ms to 2000ms for slower hardware
+        await page.waitForSelector(selector, { timeout: 2000, state: 'attached' });
         const txt = await page.textContent(selector);
         if (txt && /[€\d]/.test(txt)) {
           priceText = txt;
@@ -263,7 +280,7 @@ export async function searchBookingPrice(
         }
       } catch {
         reasons.push(`selector-timeout:${selector}`);
-        console.log('[prices] Booking.com: selector timed out:', selector);
+        // Don't log every timeout to reduce noise
         continue;
       }
     }
@@ -272,8 +289,8 @@ export async function searchBookingPrice(
     if (!priceText) {
       try {
         if (signal?.aborted) return null;
-        // Wait briefly for any rows with rounded price to appear
-        await page.waitForSelector('[data-hotel-rounded-price]', { timeout: 1200 }).catch(() => {});
+        // Wait longer for any rows with rounded price to appear on slower hardware
+        await page.waitForSelector('[data-hotel-rounded-price]', { timeout: 3000, state: 'attached' }).catch(() => {});
         const roundedValues = await page.$$eval('[data-hotel-rounded-price]', (nodes) =>
           nodes
             .map((n) => (n as HTMLElement).getAttribute('data-hotel-rounded-price') || '')
