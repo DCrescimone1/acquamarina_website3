@@ -248,40 +248,42 @@ export async function searchBookingPrice(
       reasons.push('early-bulk-scan-error');
     }
     
-    const selectors = [
-      '[data-testid="price-and-discounted-price"]',
-      'span[data-testid="price-and-discounted-price"]',
-      '.prco-valign-middle-helper',
-      'span.prco-valign-middle-helper',
-      'div.f6431b446c span',
-      // Fallback selectors from Booking.com HTML structure
-      'span.bui-u-sr-only',
-      '.bui-u-sr-only',
-      '.hprt-price-block .bui-u-sr-only',
-      '.hprt-table-cell-price .bui-u-sr-only',
-      '.hprt-price-block .prco-valign-middle-helper',
-      '.prco-wrapper .prco-valign-middle-helper',
-      '.prco-wrapper .bui-u-sr-only',
-      '.bui-price-display_value .bui-u-sr-only',
-      '[data-hotel-rounded-price]',
-    ];
-    
-    // Try selectors with increased timeout for slower hardware
-    for (const selector of selectors) {
-      try {
-        if (signal?.aborted) return null;
-        // Increased timeout from 800ms to 2000ms for slower hardware
-        await page.waitForSelector(selector, { timeout: 2000, state: 'attached' });
-        const txt = await page.textContent(selector);
-        if (txt && /[€\d]/.test(txt)) {
-          priceText = txt;
-          console.log(`[prices] Booking.com: Found price using selector "${selector}": ${priceText}`);
-          break;
+    if (!priceText) {
+      const selectors = [
+        '[data-testid="price-and-discounted-price"]',
+        'span[data-testid="price-and-discounted-price"]',
+        '.prco-valign-middle-helper',
+        'span.prco-valign-middle-helper',
+        'div.f6431b446c span',
+        // Fallback selectors from Booking.com HTML structure
+        'span.bui-u-sr-only',
+        '.bui-u-sr-only',
+        '.hprt-price-block .bui-u-sr-only',
+        '.hprt-table-cell-price .bui-u-sr-only',
+        '.hprt-price-block .prco-valign-middle-helper',
+        '.prco-wrapper .prco-valign-middle-helper',
+        '.prco-wrapper .bui-u-sr-only',
+        '.bui-price-display_value .bui-u-sr-only',
+        '[data-hotel-rounded-price]',
+      ];
+
+      // Try selectors with increased timeout for slower hardware
+      for (const selector of selectors) {
+        try {
+          if (signal?.aborted) return null;
+          // Increased timeout from 800ms to 2000ms for slower hardware
+          await page.waitForSelector(selector, { timeout: 2000, state: 'attached' });
+          const txt = await page.textContent(selector);
+          if (txt && /[€\d]/.test(txt)) {
+            priceText = txt;
+            console.log(`[prices] Booking.com: Found price using selector "${selector}": ${priceText}`);
+            break;
+          }
+        } catch {
+          reasons.push(`selector-timeout:${selector}`);
+          // Don't log every timeout to reduce noise
+          continue;
         }
-      } catch {
-        reasons.push(`selector-timeout:${selector}`);
-        // Don't log every timeout to reduce noise
-        continue;
       }
     }
     
