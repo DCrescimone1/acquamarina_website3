@@ -6,17 +6,17 @@ import type { TranslationData } from './types'
  */
 export const enTranslations: TranslationData = {
   metadata: {
-    title: "Luxury Holiday Retreat | Book Your Perfect Getaway",
-    description: "Experience ultimate coastal luxury. Discover our exquisite holiday property with premium amenities, stunning views, and world-class service. Book your dream getaway today.",
-    keywords: "luxury holiday, beach house, vacation rental, coastal retreat, Marzamemi, Sicily",
+    title: "Acquamarina Marzamemi | Holiday Home with 2 Pools & Private Parking",
+    description: "Steps from the beach in a private residence in Marzamemi. 1-bedroom holiday home (max 4 guests) with equipped kitchen, private garden, fast WiFi, 2 pools (jacuzzi and infinity), and private parking.",
+    keywords: "Acquamarina, Marzamemi, holiday home, apartment, 1 bedroom, 2 pools, private parking, near the beach, Sicily, WiFi",
     openGraph: {
-      title: "Acquamarina Casa Vacanze - Luxury Retreat",
-      description: "Your perfect coastal escape in Marzamemi",
-      siteName: "Acquamarina Casa Vacanze"
+      title: "Acquamarina Marzamemi – Holiday Home with 2 Pools",
+      description: "Apartment in Marzamemi with garden, kitchen, WiFi and parking. 400m from the port, near the beach.",
+      siteName: "Acquamarina Marzamemi"
     },
     twitter: {
-      title: "Acquamarina Casa Vacanze - Luxury Retreat",
-      description: "Your perfect coastal escape in Marzamemi"
+      title: "Acquamarina Marzamemi – Holiday Home",
+      description: "1 bedroom, 2 pools, steps from the beach. Book your stay in Marzamemi."
     }
   },
   navigation: {

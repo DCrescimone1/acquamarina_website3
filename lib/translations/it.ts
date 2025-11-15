@@ -6,17 +6,17 @@ import type { TranslationData } from './types'
  */
 export const itTranslations: TranslationData = {
   metadata: {
-    title: "Rifugio di Lusso per Vacanze | Prenota la Tua Fuga Perfetta",
-    description: "Vivi l'epitome del lusso costiero. Scopri la nostra squisita proprietà per vacanze con servizi premium, viste mozzafiato e servizio di classe mondiale. Prenota oggi la tua fuga da sogno.",
-    keywords: "vacanze di lusso, casa al mare, affitto vacanze, rifugio costiero, Marzamemi, Sicilia",
+    title: "Acquamarina Marzamemi | Casa Vacanze con 2 Piscine e Parcheggio Privato",
+    description: "A pochi passi dalla spiaggia in una residenza privata a Marzamemi. Casa vacanze con 1 camera da letto (max 4 ospiti), cucina attrezzata, giardino privato, WiFi veloce, 2 piscine (idromassaggio e a sfioro) e parcheggio privato.",
+    keywords: "Acquamarina, Marzamemi, casa vacanze, appartamento, 1 camera da letto, 2 piscine, parcheggio privato, vicino alla spiaggia, Sicilia, WiFi",
     openGraph: {
-      title: "Acquamarina Casa Vacanze - Rifugio di Lusso",
-      description: "La tua perfetta fuga costiera a Marzamemi",
-      siteName: "Acquamarina Casa Vacanze"
+      title: "Acquamarina Marzamemi – Casa Vacanze con 2 Piscine",
+      description: "Appartamento a Marzamemi con giardino, cucina, WiFi e parcheggio. A 400m dal porto, vicino alla spiaggia.",
+      siteName: "Acquamarina Marzamemi"
     },
     twitter: {
-      title: "Acquamarina Casa Vacanze - Rifugio di Lusso",
-      description: "La tua perfetta fuga costiera a Marzamemi"
+      title: "Acquamarina Marzamemi – Casa Vacanze",
+      description: "1 camera da letto, 2 piscine, vicino alla spiaggia. Prenota il tuo soggiorno a Marzamemi."
     }
   },
   navigation: {
