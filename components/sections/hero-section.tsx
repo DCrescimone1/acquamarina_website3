@@ -17,7 +17,7 @@ export default function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0 w-full h-full">
         <Image
-          src="/luxury-beach-house-seaside.jpg"
+          src="/pictures/IMG_8540.webp"
           alt="Luxury beach property"
           fill
           priority

@@ -11,13 +11,21 @@ export default function GallerySection() {
   const [currentPage, setCurrentPage] = useState(0)
   const [autoRotate, setAutoRotate] = useState(true)
 
-  // Sample gallery images - replace with actual images
-  const galleryImages = Array.from({ length: 50 }, (_, i) => ({
-    id: i + 1,
-    src: `/placeholder.svg?height=${300 + (i % 3) * 50}&width=${400 + (i % 3) * 50}&query=luxury-property-${i}`,
-    alt: `Property image ${i + 1}`,
-    size: i % 6, // 0-5 for varied sizes
-  }))
+  // Virtual tour images from public/pictures
+  const galleryImages = [
+    { id: 1, src: "/pictures/IMG_7194.webp", alt: "Virtual tour 1", size: 0 },
+    { id: 2, src: "/pictures/IMG_7196.webp", alt: "Virtual tour 2", size: 1 },
+    { id: 3, src: "/pictures/IMG_7199.webp", alt: "Virtual tour 3", size: 2 },
+    { id: 4, src: "/pictures/IMG_7202.webp", alt: "Virtual tour 4", size: 3 },
+    { id: 5, src: "/pictures/IMG_7203.webp", alt: "Virtual tour 5", size: 4 },
+    { id: 6, src: "/pictures/IMG_7205.webp", alt: "Virtual tour 6", size: 5 },
+    { id: 7, src: "/pictures/IMG_7597.webp", alt: "Virtual tour 7", size: 0 },
+    { id: 8, src: "/pictures/IMG_7598.webp", alt: "Virtual tour 8", size: 1 },
+    { id: 9, src: "/pictures/IMG_7599.webp", alt: "Virtual tour 9", size: 2 },
+    { id: 10, src: "/pictures/IMG_7600.webp", alt: "Virtual tour 10", size: 3 },
+    { id: 11, src: "/pictures/IMG_7601.webp", alt: "Virtual tour 11", size: 4 },
+    { id: 12, src: "/pictures/IMG_7602.webp", alt: "Virtual tour 12", size: 5 },
+  ]
 
   // Auto-rotate pages every 5 seconds
   useEffect(() => {
