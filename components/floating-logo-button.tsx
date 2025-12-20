@@ -6,6 +6,8 @@ import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { X, Send, AlertCircle, RefreshCw } from 'lucide-react'
 import { useTranslation } from "@/lib/hooks/useTranslation"
+import ReactMarkdown from 'react-markdown'
+import { cn } from "@/lib/utils"
 
 // Message interface for type safety
 interface Message {
@@ -14,6 +16,99 @@ interface Message {
   content: string
   timestamp: Date
 }
+
+// Function to convert URLs and phone numbers to markdown links
+const convertTextToLinks = (text: string): string => {
+  // URL pattern: matches http://, https://, www., and common domains
+  const urlPattern = /(https?:\/\/[^\s\)]+|www\.[^\s\)]+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}[^\s\)]*)/g;
+  
+  // Phone number pattern: matches international format (+XX...) and local formats
+  const phonePattern = /(\+?\d{1,4}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9})/g;
+  
+  // Helper to check if text at a given position is inside a markdown link
+  const isInsideMarkdownLink = (text: string, pos: number): boolean => {
+    // Look backwards for the opening bracket and parenthesis pattern
+    let bracketCount = 0;
+    let parenCount = 0;
+    let foundBracket = false;
+    
+    for (let i = pos - 1; i >= 0; i--) {
+      if (text[i] === ')') {
+        parenCount++;
+      } else if (text[i] === '(' && parenCount > 0) {
+        parenCount--;
+        if (parenCount === 0 && foundBracket) {
+          return true; // We're inside a markdown link
+        }
+      } else if (text[i] === ']') {
+        bracketCount++;
+      } else if (text[i] === '[' && bracketCount > 0) {
+        bracketCount--;
+        foundBracket = true;
+      } else if (text[i] === ' ' || text[i] === '\n') {
+        break; // Stop at whitespace
+      }
+    }
+    return false;
+  };
+  
+  let processedText = text;
+  
+  // Convert URLs to markdown links
+  // Callback signature: (match, p1, offset, string) where p1 is the capturing group
+  processedText = processedText.replace(urlPattern, (match, url, offset) => {
+    // Check if this URL is already inside a markdown link
+    if (offset !== undefined && isInsideMarkdownLink(processedText, offset)) {
+      return match;
+    }
+    
+    // Use the captured group or the full match
+    const actualUrl = url || match;
+    
+    // Add protocol if missing
+    const fullUrl = actualUrl.startsWith('http') ? actualUrl : `https://${actualUrl}`;
+    return `[${actualUrl}](${fullUrl})`;
+  });
+  
+  // Convert phone numbers to tel: links
+  // Callback signature: (match, p1, offset, string) where p1 is the capturing group
+  processedText = processedText.replace(phonePattern, (match, phone, offset) => {
+    // Check if this phone is already inside a markdown link
+    if (offset !== undefined && isInsideMarkdownLink(processedText, offset)) {
+      return match;
+    }
+    
+    // Use the captured group or the full match
+    const actualPhone = phone || match;
+    
+    // Remove spaces, dashes, and parentheses for tel: link
+    const telNumber = actualPhone.replace(/[\s\-\(\)]/g, '');
+    return `[${actualPhone}](tel:${telNumber})`;
+  });
+  
+  return processedText;
+};
+
+// Helper function to create markdown link components configuration
+const createMarkdownComponents = (role: 'user' | 'assistant' = 'assistant') => ({
+  a: ({ node, ...props }: any) => {
+    const href = props.href || '';
+    const isPhoneLink = href.startsWith('tel:');
+    return (
+      <a 
+        {...props} 
+        target={isPhoneLink ? undefined : "_blank"}
+        rel={isPhoneLink ? undefined : "noopener noreferrer"}
+        className={cn(
+          role === "user" 
+            ? "text-white underline hover:text-blue-200" 
+            : "text-primary underline hover:text-primary/80",
+          "cursor-pointer"
+        )}
+      />
+    );
+  }
+});
 
 // Safe UUID generator with fallback
 function generateUUID(): string {
@@ -238,10 +333,16 @@ export default function FloatingLogoButton() {
                     />
                   </div>
                   <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 max-w-[80%]">
-                    <p className="text-sm text-gray-700 leading-relaxed">{t('chat.welcome.greeting')}</p>
-                    <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                      {t('chat.welcome.question')}
-                    </p>
+                    <div className="text-sm text-gray-700 leading-relaxed">
+                      <ReactMarkdown components={createMarkdownComponents('assistant')}>
+                        {convertTextToLinks(t('chat.welcome.greeting'))}
+                      </ReactMarkdown>
+                    </div>
+                    <div className="text-sm text-gray-700 leading-relaxed mt-2">
+                      <ReactMarkdown components={createMarkdownComponents('assistant')}>
+                        {convertTextToLinks(t('chat.welcome.question'))}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               )}
@@ -271,11 +372,13 @@ export default function FloatingLogoButton() {
                           : 'bg-white border border-gray-100 rounded-tl-sm'
                       }`}
                     >
-                      <p className={`text-sm leading-relaxed whitespace-pre-wrap break-words ${
+                      <div className={`text-sm leading-relaxed whitespace-pre-wrap break-words ${
                         msg.role === 'user' ? 'text-white' : 'text-gray-700'
                       }`}>
-                        {msg.content}
-                      </p>
+                        <ReactMarkdown components={createMarkdownComponents(msg.role)}>
+                          {convertTextToLinks(msg.content)}
+                        </ReactMarkdown>
+                      </div>
                     </div>
                     <span className={`text-xs text-gray-400 mt-1 px-2 ${
                       msg.role === 'user' ? 'text-right' : 'text-left'
