@@ -121,7 +121,13 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-primary-foreground/20 pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 md:gap-4 text-xs text-primary-foreground/60">
-            <p>&copy; {currentYear ?? ""} {t('footer.copyright')}</p>
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <p>&copy; {currentYear ?? ""} {t('footer.copyright')}</p>
+              <div className="flex gap-4 text-xs">
+                <span>CIN: IT089014B4BWIJK4YB</span>
+                <span>CIR: 19089014B457455</span>
+              </div>
+            </div>
             <p className="hidden sm:block">{t('footer.tagline')}</p>
           </div>
         </div>
