@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     // Launch browser with headless mode and sandbox flags
     try {
       browser = await chromium.launch({
-        headless: false,
+        headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       })
     } catch (error) {
