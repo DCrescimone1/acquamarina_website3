@@ -7,6 +7,7 @@ interface BookingSearchParams {
   guests: { adults: number; children: number };
   language: string;
   browser: Browser;
+  signal?: AbortSignal;
 }
 
 /**
@@ -167,9 +168,11 @@ export async function searchBookingPrice(
   } finally {
     // Close browser context in finally block
     if (context) {
+      console.log('[prices] Booking.com: Closing context');
       await context.close().catch((err) => {
         console.error('[prices] Error closing Booking.com context:', err);
       });
+      console.log('[prices] Booking.com: Context closed');
     }
   }
 }

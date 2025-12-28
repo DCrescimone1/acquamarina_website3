@@ -4,6 +4,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    qualities: [75, 85],
   },
   // Turbopack is default in Next.js 16; minimal config
   turbopack: {

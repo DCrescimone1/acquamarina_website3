@@ -6,6 +6,7 @@ interface AirbnbSearchParams {
   dates: { from: string; to: string };
   guests: { adults: number; children: number };
   browser: Browser;
+  signal?: AbortSignal;
 }
 
 // Construct Airbnb URL with search parameters
@@ -188,9 +189,11 @@ export async function searchAirbnbPrice(
     return null;
   } finally {
     if (context) {
+      console.log('[prices] Airbnb: Closing context');
       await context.close().catch((err) => {
         console.error('[prices] Error closing Airbnb context:', err);
       });
+      console.log('[prices] Airbnb: Context closed');
     }
   }
 }

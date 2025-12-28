@@ -61,7 +61,7 @@ find . -type f \
     ! -name "*.map" \
     ! -name "*.sqlitejs" \
     ! -name ".kiro/*" \
-    ! -name "CLAUDE.md" \ 
+    ! -name "CLAUDE.md" \
     -size -${max_file_size}c \
     -print0 | while IFS= read -r -d '' file; do
     # Check if the file is not empty

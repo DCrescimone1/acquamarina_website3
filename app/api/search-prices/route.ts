@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     // Launch browser with headless mode and sandbox flags
     try {
       browser = await chromium.launch({
-        headless: true,
+        headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       })
     } catch (error) {
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     const [bookingResult, airbnbResult] = await Promise.all([
       withTimeout(
         searchBookingPrice({ dates, guests, language: resolvedLanguage, browser, signal: bookingAbort.signal }),
-        15000, // Increased from 9000ms to 15000ms for slower hardware (Raspberry Pi)
+        15000,
         'Booking.com',
         bookingAbort
       ),
@@ -178,7 +178,9 @@ export async function POST(request: NextRequest) {
     )
   } finally {
     // Close browser in finally block with error catching
+    // Add small delay to ensure contexts finish closing before browser closes
     if (browser) {
+      await new Promise(resolve => setTimeout(resolve, 100));
       await browser.close().catch((err) => {
         console.error('[prices] Error closing browser:', err)
       })
