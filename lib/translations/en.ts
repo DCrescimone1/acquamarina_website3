@@ -63,7 +63,7 @@ export const enTranslations: TranslationData = {
     tagline: "Designed with elegance for your perfect escape"
   },
   hero: {
-    title: "YOUR PERFECT GETAWAY",
+    title: "Your authentic Sicily, steps from the sea",
     subtitle: "",
     description: "Just steps from the beach in a private residence, 400m from Marzamemi port. Modern comforts with Sicilian charm, fully equipped kitchen, two pools, and private parking for a peaceful stay",
     scrollText: "Scroll"

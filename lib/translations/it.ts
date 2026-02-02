@@ -63,7 +63,7 @@ export const itTranslations: TranslationData = {
     tagline: "Progettato con eleganza per la tua fuga perfetta"
   },
   hero: {
-    title: "LA TUA FUGA PERFETTA",
+    title: "La tua Sicilia autentica, a due passi dal mare",
     subtitle: "",
     description: "A pochi passi dalla spiaggia in una residenza privata, a 400m dal porto di Marzamemi. Comfort moderni con fascino siciliano, cucina completamente attrezzata, due piscine e parcheggio privato per un soggiorno tranquillo",
     scrollText: "Scorri"
