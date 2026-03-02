@@ -41,6 +41,9 @@ function buildBookingUrl(params: BookingSearchParams): string {
   url.searchParams.set('checkout', dates.to);
   url.searchParams.set('group_adults', guests.adults.toString());
   url.searchParams.set('group_children', guests.children.toString());
+  for (let i = 0; i < guests.children; i++) {
+    url.searchParams.append('age', '10');
+  }
 
   // Add language suffix to pathname
   url.pathname = url.pathname.replace('.html', `.${languageSuffix}.html`);
