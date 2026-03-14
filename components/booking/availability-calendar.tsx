@@ -84,6 +84,11 @@ export default function AvailabilityCalendar({
     end: endOfMonth(effectiveMonth),
   })
 
+  const isRangeAvailable = (from: Date, to: Date) => {
+    const range = eachDayOfInterval({ start: from, end: to })
+    return range.every((d) => !isDateBooked(d))
+  }
+
   const handleDateClick = (date: Date) => {
     const isPast = today ? isBefore(date, today) : false
     if (isDateBooked(date) || isPast) return
@@ -92,6 +97,12 @@ export default function AvailabilityCalendar({
       setSelectedFrom(date)
       setSelectedTo(null)
     } else if (isAfter(date, selectedFrom)) {
+      if (!isRangeAvailable(selectedFrom, date)) {
+        // Range crosses a booked period — restart selection from this date
+        setSelectedFrom(date)
+        setSelectedTo(null)
+        return
+      }
       setSelectedTo(date)
       onDateSelect?.({
         from: format(selectedFrom, "yyyy-MM-dd"),
