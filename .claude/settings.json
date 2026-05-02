@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(awk '{print $NF}')"
+      "Bash(awk '{print $NF}')",
+      "Bash(npm install *)"
     ]
   }
 }
