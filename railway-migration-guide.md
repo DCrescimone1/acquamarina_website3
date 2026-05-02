@@ -346,6 +346,33 @@ Always run `npm run build` locally before pushing to Railway. Many Railway build
 
 ---
 
+## 13. Railway Security Vulnerability Gate
+
+**What broke**: Railway refused to build with the error `SECURITY VULNERABILITIES DETECTED` and
+listed CVEs against `next@16.0.0`.
+
+**Why**: Railway scans `package-lock.json` before building. If it finds a package with a known CVE
+above a certain severity, it blocks the deployment entirely — no override, no skip flag.
+
+**Fix**: Upgrade the affected package to the patched version Railway specifies, then regenerate
+`package-lock.json`.
+
+```bash
+npm install next@^16.0.10 --legacy-peer-deps
+git add package.json package-lock.json
+git commit -m "Fix: upgrade next.js to patch Railway CVE block"
+git push
+```
+
+**Note**: npm may resolve `^16.0.10` to a higher patch (e.g. `16.2.4`) — that is fine and preferred.
+The `--legacy-peer-deps` flag is required here because React 19 has peer dep conflicts with some
+packages; without it, npm will refuse to install.
+
+**General rule**: If Railway blocks on a vulnerability, do not attempt workarounds. Upgrade the
+flagged package. Check `npm audit` locally to catch this before pushing.
+
+---
+
 ## Summary of All Fixes Applied (in chronological order)
 
 | # | Problem | Fix |
@@ -359,3 +386,4 @@ Always run `npm run build` locally before pushing to Railway. Many Railway build
 | 7 | Stripe key throws during `next build` | Lazy-initialized Stripe client inside a function |
 | 8 | `NEXT_PUBLIC_*` undefined on client | Added `ARG`/`ENV` pairs in Dockerfile before build step |
 | 9 | Google Maps `RefererNotAllowedMapError` | Add Railway domain in Google Cloud Console credentials |
+| 10 | Railway blocks build with CVE errors | Upgrade flagged package (`next@16.0.0` → `16.2.4`) and push updated `package-lock.json` |

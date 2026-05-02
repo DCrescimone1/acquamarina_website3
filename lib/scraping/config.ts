@@ -10,8 +10,8 @@ export const SCRAPING_CONFIG: ScrapingConfig = {
   },
   userAgent:
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  navigationTimeout: 10000,
-  selectorTimeout: 6000,
+  navigationTimeout: 20000,
+  selectorTimeout: 10000,
 };
 
 /**

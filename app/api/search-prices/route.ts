@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     const [bookingResult, airbnbResult] = await Promise.all([
       withTimeout(
         searchBookingPrice({ dates, guests, language: resolvedLanguage, browser, signal: bookingAbort.signal }),
-        15000,
+        35000,
         'Booking.com',
         bookingAbort
       ),
