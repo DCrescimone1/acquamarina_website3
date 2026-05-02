@@ -21,6 +21,7 @@ and the exact fix applied.
 10. [Railway Environment Variables Checklist](#10-railway-environment-variables-checklist)
 11. [Google Maps — Referrer Authorization](#11-google-maps--referrer-authorization)
 12. [Debugging Methodology](#12-debugging-methodology)
+13. [Railway Security Vulnerability Gate](#13-railway-security-vulnerability-gate)
 
 ---
 
