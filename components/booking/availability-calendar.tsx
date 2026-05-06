@@ -22,7 +22,7 @@ export default function AvailabilityCalendar({
   initialFrom,
   initialTo,
 }: AvailabilityCalendarProps) {
-  const { t } = useTranslation()
+  const { t, language } = useTranslation()
   // Initialize after mount to avoid SSR/client time mismatches
   const [currentMonth, setCurrentMonth] = useState<Date | null>(null)
   const [bookedDates, setBookedDates] = useState<any[]>([])
@@ -79,10 +79,18 @@ export default function AvailabilityCalendar({
   }
 
   const effectiveMonth = currentMonth ?? startOfToday()
+  const monthStart = startOfMonth(effectiveMonth)
   const days = eachDayOfInterval({
-    start: startOfMonth(effectiveMonth),
+    start: monthStart,
     end: endOfMonth(effectiveMonth),
   })
+  const leadingBlanks = monthStart.getDay()
+  const localeTag = language === 'it' ? 'it-IT' : 'en-US'
+  const monthLabel = new Intl.DateTimeFormat(localeTag, {
+    month: 'long',
+    year: 'numeric',
+  }).format(effectiveMonth)
+  const monthLabelCapitalized = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)
 
   const isRangeAvailable = (from: Date, to: Date) => {
     const range = eachDayOfInterval({ start: from, end: to })
@@ -144,7 +152,7 @@ export default function AvailabilityCalendar({
       )}
     >
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h3 className="font-serif text-base sm:text-lg font-bold text-foreground">{format(effectiveMonth, "MMMM yyyy")}</h3>
+        <h3 className="font-serif text-base sm:text-lg font-bold text-foreground">{monthLabelCapitalized}</h3>
         <div className="flex gap-2">
           <Button
             size="icon"
@@ -184,6 +192,9 @@ export default function AvailabilityCalendar({
 
       {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-1 sm:gap-2">
+        {Array.from({ length: leadingBlanks }).map((_, i) => (
+          <div key={`blank-${i}`} className="h-7 sm:h-8 md:h-9" />
+        ))}
         {days.map((day) => {
           const isBooked = isDateBooked(day)
           const isPast = today ? isBefore(day, today) : false
