@@ -127,6 +127,7 @@ export interface TranslationData {
         booked: string
       }
       loadingError: string
+      unavailable: string
     }
   }
   contact: {

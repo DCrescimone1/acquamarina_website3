@@ -145,7 +145,8 @@ export const itTranslations: TranslationData = {
         selected: "Selezionato",
         booked: "Prenotato"
       },
-      loadingError: "Errore nel caricamento del calendario"
+      loadingError: "Errore nel caricamento del calendario",
+      unavailable: "Disponibilità non consultabile in questo momento. Contattaci per verificare le date."
     }
   },
   contact: {

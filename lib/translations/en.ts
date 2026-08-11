@@ -145,7 +145,8 @@ export const enTranslations: TranslationData = {
         selected: "Selected",
         booked: "Booked"
       },
-      loadingError: "Error loading calendar"
+      loadingError: "Error loading calendar",
+      unavailable: "Availability can't be checked right now. Please contact us to confirm your dates."
     }
   },
   contact: {

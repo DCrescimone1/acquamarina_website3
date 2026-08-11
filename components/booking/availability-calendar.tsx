@@ -27,6 +27,7 @@ export default function AvailabilityCalendar({
   const [currentMonth, setCurrentMonth] = useState<Date | null>(null)
   const [bookedDates, setBookedDates] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [selectedFrom, setSelectedFrom] = useState<Date | null>(null)
   const [selectedTo, setSelectedTo] = useState<Date | null>(null)
   const [today, setToday] = useState<Date | null>(null)
@@ -40,6 +41,8 @@ export default function AvailabilityCalendar({
         const data = await response.json()
         setBookedDates(data)
       } catch (error) {
+        // Fail closed: never present an all-available calendar we can't verify
+        setLoadFailed(true)
         console.error(t('booking.calendar.loadingError'), error)
       } finally {
         setLoading(false)
@@ -123,6 +126,21 @@ export default function AvailabilityCalendar({
     return (
       <div className="bg-white rounded-lg shadow-xl p-6 flex items-center justify-center h-80">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (loadFailed) {
+    return (
+      <div
+        className={cn(
+          "bg-white rounded-lg shadow-xl p-6 border border-border flex items-center justify-center h-80 text-center",
+          sticky ? "sticky top-24" : "",
+          className
+        )}
+        role="alert"
+      >
+        <p className="text-sm text-muted-foreground">{t('booking.calendar.unavailable')}</p>
       </div>
     )
   }
