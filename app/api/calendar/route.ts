@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import ICAL from "ical.js"
-import { startOfDay, endOfDay, subDays } from "date-fns"
 
 const AIRBNB_CALENDAR_URL = process.env.AIRBNB_CALENDAR_URL as string
 const BOOKING_CALENDAR_URL = process.env.BOOKING_CALENDAR_URL as string
@@ -13,6 +12,13 @@ let cache: {
   timestamp: number
   data: string
 } | null = null
+
+// Calendar dates are plain days, not instants: an iCal VALUE=DATE has no time
+// zone, and neither does "the night of the 18th". Emitting yyyy-MM-dd keeps the
+// server and the visitor's browser from disagreeing by a day.
+function toDateKey(time: ICAL.Time) {
+  return `${time.year}-${String(time.month).padStart(2, "0")}-${String(time.day).padStart(2, "0")}`
+}
 
 async function fetchAndParseCalendar(url: string, source: string) {
   const response = await fetch(url, {
@@ -35,12 +41,13 @@ async function fetchAndParseCalendar(url: string, source: string) {
 
   return vevents.map((vevent) => {
     const event = new ICAL.Event(vevent)
-    const startDate = startOfDay(event.startDate.toJSDate())
-    const endDate = subDays(endOfDay(event.endDate.toJSDate()), 1)
+    // DTEND is exclusive (the checkout day), so step back to the last occupied night
+    const lastNight = event.endDate.clone()
+    lastNight.adjust(-1, 0, 0, 0)
 
     return {
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
+      start: toDateKey(event.startDate),
+      end: toDateKey(lastNight),
       summary: event.summary || "Booked",
       source: source,
     }

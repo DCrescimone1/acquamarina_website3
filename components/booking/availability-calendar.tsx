@@ -73,12 +73,11 @@ export default function AvailabilityCalendar({
     }
   }, [initialFrom, initialTo])
 
+  // Compare calendar days as yyyy-MM-dd, never as instants: parsing the API's
+  // dates into Date objects shifts every range by a day outside UTC.
   const isDateBooked = (date: Date) => {
-    return bookedDates.some((booking) => {
-      const start = new Date(booking.start)
-      const end = new Date(booking.end)
-      return date >= start && date <= end
-    })
+    const day = format(date, "yyyy-MM-dd")
+    return bookedDates.some((booking) => day >= booking.start && day <= booking.end)
   }
 
   const effectiveMonth = currentMonth ?? startOfToday()
